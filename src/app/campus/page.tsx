@@ -1,16 +1,18 @@
 "use client";
 
 import { CAMPUS_STATS } from "@/lib/mock-data";
+import { Users, BookOpen, TrendingUp } from "lucide-react";
 import {
   PieChart,
   Pie,
   Cell,
-  LineChart,
-  Line,
+  AreaChart,
+  Area,
   XAxis,
   YAxis,
   Tooltip,
   ResponsiveContainer,
+  ReferenceLine,
 } from "recharts";
 
 const CLASSIFICATION_DATA = [
@@ -21,13 +23,28 @@ const CLASSIFICATION_DATA = [
   { name: "Fail", value: CAMPUS_STATS.overallBreakdown.fail, color: "#7f1d1d" },
 ];
 
+const dominantClass = CLASSIFICATION_DATA.reduce((max, item) =>
+  item.value > max.value ? item : max
+);
+
 const sortedModules = [...CAMPUS_STATS.moduleStats].sort((a, b) => b.avg - a.avg);
+
+const campusAvg =
+  CAMPUS_STATS.moduleStats.reduce((s, m) => s + m.avg, 0) /
+  CAMPUS_STATS.moduleStats.length;
 
 function avgColor(avg: number) {
   if (avg >= 70) return "text-[var(--color-loop-green)]";
   if (avg >= 60) return "text-[var(--color-loop-gold)]";
   if (avg >= 50) return "text-[var(--color-loop-amber)]";
   return "text-[var(--color-loop-red)]";
+}
+
+function barBg(avg: number) {
+  if (avg >= 70) return "bg-[var(--color-loop-green)]";
+  if (avg >= 60) return "bg-[var(--color-loop-gold)]";
+  if (avg >= 50) return "bg-[var(--color-loop-amber)]";
+  return "bg-[var(--color-loop-red)]";
 }
 
 export default function CampusPage() {
@@ -38,93 +55,124 @@ export default function CampusPage() {
         <div className="mb-8">
           <h1 className="text-3xl font-bold tracking-tight mb-1">Campus Stats</h1>
           <p className="text-[var(--color-loop-muted)]">
-            Anonymous, aggregated view across all computing students
+            How your cohort is doing — anonymous, aggregated data across all computing students
           </p>
         </div>
 
-        {/* Headline stats */}
+        {/* Headline stats — accent-topped cards with icons */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8 animate-stagger">
-          <div className="loop-card p-6 text-center">
-            <div className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[var(--color-loop-primary)] to-[var(--color-loop-primary-hover)]">
+          {/* Students */}
+          <div className="loop-card p-6 relative overflow-hidden">
+            <div className="absolute top-0 left-0 right-0 h-1 bg-[var(--color-loop-primary)]" />
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-10 h-10 rounded-xl bg-[var(--color-loop-primary)]/10 flex items-center justify-center">
+                <Users className="w-5 h-5 text-[var(--color-loop-primary)]" />
+              </div>
+              <span className="text-sm font-medium text-[var(--color-loop-muted)]">Students</span>
+            </div>
+            <div className="text-4xl font-bold text-[var(--color-loop-text)]">
               {CAMPUS_STATS.totalStudents}
             </div>
-            <div className="text-sm text-[var(--color-loop-muted)] mt-1">Students</div>
           </div>
-          <div className="loop-card p-6 text-center">
-            <div className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[var(--color-loop-primary)] to-[var(--color-loop-primary-hover)]">
+
+          {/* Modules */}
+          <div className="loop-card p-6 relative overflow-hidden">
+            <div className="absolute top-0 left-0 right-0 h-1 bg-[var(--color-loop-accent)]" />
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-10 h-10 rounded-xl bg-[var(--color-loop-accent)]/10 flex items-center justify-center">
+                <BookOpen className="w-5 h-5 text-[var(--color-loop-accent)]" />
+              </div>
+              <span className="text-sm font-medium text-[var(--color-loop-muted)]">Modules</span>
+            </div>
+            <div className="text-4xl font-bold text-[var(--color-loop-text)]">
               {CAMPUS_STATS.moduleStats.length}
             </div>
-            <div className="text-sm text-[var(--color-loop-muted)] mt-1">Modules</div>
           </div>
-          <div className="loop-card p-6 text-center">
-            <div className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[var(--color-loop-primary)] to-[var(--color-loop-primary-hover)]">
-              {(
-                CAMPUS_STATS.moduleStats.reduce((s, m) => s + m.avg, 0) /
-                CAMPUS_STATS.moduleStats.length
-              ).toFixed(1)}
-              %
+
+          {/* Average Grade */}
+          <div className="loop-card p-6 relative overflow-hidden">
+            <div className="absolute top-0 left-0 right-0 h-1 bg-[var(--color-loop-green)]" />
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-10 h-10 rounded-xl bg-[var(--color-loop-green)]/10 flex items-center justify-center">
+                <TrendingUp className="w-5 h-5 text-[var(--color-loop-green)]" />
+              </div>
+              <span className="text-sm font-medium text-[var(--color-loop-muted)]">Cohort Average</span>
             </div>
-            <div className="text-sm text-[var(--color-loop-muted)] mt-1">Average Grade</div>
+            <div className={`text-4xl font-bold ${avgColor(campusAvg)}`}>
+              {campusAvg.toFixed(1)}%
+            </div>
           </div>
         </div>
 
         {/* Charts row */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          {/* Classification Breakdown */}
+          {/* Classification — Enhanced Donut with Center Label */}
           <div className="loop-card p-6">
-            <h2 className="text-lg font-semibold mb-4">Classification Breakdown</h2>
-            <div className="flex flex-col sm:flex-row items-center">
-              <div className="w-full sm:w-1/2">
-                <ResponsiveContainer width="100%" height={200}>
-                  <PieChart>
-                    <Pie
-                      data={CLASSIFICATION_DATA}
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={50}
-                      outerRadius={80}
-                      paddingAngle={3}
-                      dataKey="value"
-                      stroke="none"
-                    >
-                      {CLASSIFICATION_DATA.map((entry) => (
-                        <Cell key={entry.name} fill={entry.color} />
-                      ))}
-                    </Pie>
-                    <Tooltip
-                      formatter={(value) => `${(Number(value) * 100).toFixed(0)}%`}
-                      contentStyle={{
-                        background: "var(--color-loop-surface-2)",
-                        border: "1px solid var(--color-loop-border)",
-                        borderRadius: "8px",
-                        color: "var(--color-loop-text)",
-                      }}
-                    />
-                  </PieChart>
-                </ResponsiveContainer>
-              </div>
-              <div className="w-full sm:w-1/2 flex flex-wrap sm:flex-col gap-2 mt-4 sm:mt-0 justify-center">
-                {CLASSIFICATION_DATA.map((entry) => (
-                  <div key={entry.name} className="flex items-center gap-2 text-sm">
-                    <span
-                      className="w-3 h-3 rounded-full shrink-0"
-                      style={{ background: entry.color }}
-                    />
-                    <span className="text-[var(--color-loop-muted)]">{entry.name}</span>
-                    <span className="ml-auto font-medium">
-                      {(entry.value * 100).toFixed(0)}%
-                    </span>
+            <h2 className="text-lg font-semibold mb-2">Classification Breakdown</h2>
+            <div className="relative">
+              <ResponsiveContainer width="100%" height={260}>
+                <PieChart>
+                  <Pie
+                    data={CLASSIFICATION_DATA}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={65}
+                    outerRadius={100}
+                    paddingAngle={3}
+                    dataKey="value"
+                    stroke="none"
+                  >
+                    {CLASSIFICATION_DATA.map((entry) => (
+                      <Cell key={entry.name} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    formatter={(value) => `${(Number(value) * 100).toFixed(0)}%`}
+                    contentStyle={{
+                      background: "var(--color-loop-surface-2)",
+                      border: "1px solid var(--color-loop-border)",
+                      borderRadius: "8px",
+                      color: "var(--color-loop-text)",
+                    }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+              {/* Center label */}
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <div className="text-center">
+                  <div className="text-3xl font-black" style={{ color: dominantClass.color }}>
+                    {dominantClass.name}
                   </div>
-                ))}
+                  <div className="text-xs text-[var(--color-loop-muted)]">most common</div>
+                </div>
               </div>
+            </div>
+            {/* Horizontal legend */}
+            <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 mt-2">
+              {CLASSIFICATION_DATA.map((entry) => (
+                <div key={entry.name} className="flex items-center gap-1.5 text-sm">
+                  <span
+                    className="w-2.5 h-2.5 rounded-full shrink-0"
+                    style={{ background: entry.color }}
+                  />
+                  <span className="text-[var(--color-loop-muted)]">{entry.name}</span>
+                  <span className="font-medium">{(entry.value * 100).toFixed(0)}%</span>
+                </div>
+              ))}
             </div>
           </div>
 
-          {/* Weekly Confidence Trend */}
+          {/* Confidence Trend — Area Chart with Gradient Fill */}
           <div className="loop-card p-6">
-            <h2 className="text-lg font-semibold mb-4">Weekly Confidence Trend</h2>
-            <ResponsiveContainer width="100%" height={200}>
-              <LineChart data={CAMPUS_STATS.weeklyTrend}>
+            <h2 className="text-lg font-semibold mb-2">Weekly Confidence Trend</h2>
+            <ResponsiveContainer width="100%" height={300}>
+              <AreaChart data={CAMPUS_STATS.weeklyTrend}>
+                <defs>
+                  <linearGradient id="confidenceGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="var(--color-loop-primary)" stopOpacity={0.3} />
+                    <stop offset="100%" stopColor="var(--color-loop-primary)" stopOpacity={0.02} />
+                  </linearGradient>
+                </defs>
                 <XAxis
                   dataKey="week"
                   tick={{ fill: "var(--color-loop-muted)", fontSize: 12 }}
@@ -147,56 +195,70 @@ export default function CampusPage() {
                     color: "var(--color-loop-text)",
                   }}
                 />
-                <Line
+                <ReferenceLine
+                  y={70}
+                  stroke="var(--color-loop-green)"
+                  strokeDasharray="6 4"
+                  strokeOpacity={0.4}
+                />
+                <Area
                   type="monotone"
                   dataKey="avgConfidence"
                   stroke="var(--color-loop-primary)"
                   strokeWidth={2.5}
-                  dot={{ fill: "var(--color-loop-primary)", r: 4 }}
+                  fill="url(#confidenceGradient)"
+                  dot={{ fill: "var(--color-loop-primary)", r: 4, strokeWidth: 0 }}
                   activeDot={{ r: 6, fill: "var(--color-loop-primary-hover)" }}
                 />
-              </LineChart>
+              </AreaChart>
             </ResponsiveContainer>
           </div>
         </div>
 
-        {/* Module Performance Table */}
-        <div className="loop-card p-6">
+        {/* Module Performance — Card Grid */}
+        <div>
           <h2 className="text-lg font-semibold mb-4">Module Performance</h2>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-[var(--color-loop-border)] text-[var(--color-loop-muted)]">
-                  <th className="text-left py-3 pr-4 font-medium">Code</th>
-                  <th className="text-left py-3 pr-4 font-medium">Module</th>
-                  <th className="text-right py-3 pr-4 font-medium">Avg Grade</th>
-                  <th className="text-right py-3 pr-4 font-medium">Students</th>
-                  <th className="text-right py-3 font-medium">First %</th>
-                </tr>
-              </thead>
-              <tbody>
-                {sortedModules.map((mod) => (
-                  <tr
-                    key={mod.code}
-                    className="border-b border-[var(--color-loop-border)] last:border-0 hover:bg-[var(--color-loop-surface-2)] transition-all cursor-default"
-                  >
-                    <td className="py-3 pr-4 font-mono text-[var(--color-loop-muted)]">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {sortedModules.map((mod, i) => (
+              <div key={mod.code} className="loop-card p-4 flex flex-col gap-2.5">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2 min-w-0">
+                    {i < 3 && (
+                      <span
+                        className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold text-white shrink-0 ${
+                          i === 0
+                            ? "bg-amber-500"
+                            : i === 1
+                              ? "bg-gray-400"
+                              : "bg-amber-700"
+                        }`}
+                      >
+                        {i + 1}
+                      </span>
+                    )}
+                    <span className="text-xs font-mono px-2 py-0.5 rounded-md bg-[var(--color-loop-surface-2)] text-[var(--color-loop-muted)] shrink-0">
                       {mod.code}
-                    </td>
-                    <td className="py-3 pr-4 font-medium">{mod.name}</td>
-                    <td className={`py-3 pr-4 text-right font-semibold ${avgColor(mod.avg)}`}>
-                      {mod.avg.toFixed(1)}%
-                    </td>
-                    <td className="py-3 pr-4 text-right text-[var(--color-loop-muted)]">
-                      {mod.students}
-                    </td>
-                    <td className="py-3 text-right text-[var(--color-loop-muted)]">
-                      {(mod.firstPct * 100).toFixed(0)}%
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                    </span>
+                    <span className="font-medium text-sm truncate">{mod.name}</span>
+                  </div>
+                  <span className={`font-bold text-lg shrink-0 ${avgColor(mod.avg)}`}>
+                    {mod.avg.toFixed(1)}%
+                  </span>
+                </div>
+                {/* Progress bar */}
+                <div className="w-full h-1.5 rounded-full bg-[var(--color-loop-surface-2)] overflow-hidden">
+                  <div
+                    className={`h-full rounded-full ${barBg(mod.avg)}`}
+                    style={{ width: `${mod.avg}%` }}
+                  />
+                </div>
+                {/* Stats */}
+                <div className="flex gap-4 text-xs text-[var(--color-loop-muted)]">
+                  <span>{mod.students} students</span>
+                  <span>{(mod.firstPct * 100).toFixed(0)}% firsts</span>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </main>

@@ -177,7 +177,7 @@ export default function PeerCard({
       {teachModules.length > 0 && (
         <div>
           <p className="text-xs font-medium text-[var(--color-loop-muted)] mb-2 uppercase tracking-wide">
-            Can Teach &mdash; Modules
+            Can Help With &mdash; Modules
           </p>
           <div className="flex flex-wrap gap-1.5">
             {teachModules.map((mod) => (
@@ -200,7 +200,7 @@ export default function PeerCard({
       {teachSkills.length > 0 && (
         <div>
           <p className="text-xs font-medium text-[var(--color-loop-muted)] mb-2 uppercase tracking-wide">
-            Can Teach &mdash; Skills
+            Can Help With &mdash; Skills
           </p>
           <div className="flex flex-wrap gap-1.5">
             {teachSkills.map((skill) => (
@@ -223,7 +223,7 @@ export default function PeerCard({
       {helpModules.length > 0 && (
         <div>
           <p className="text-xs font-medium text-[var(--color-loop-muted)] mb-2 uppercase tracking-wide">
-            Needs Help &mdash; Modules
+            Wants to Learn &mdash; Modules
           </p>
           <div className="flex flex-wrap gap-1.5">
             {helpModules.map((mod) => (
@@ -242,7 +242,7 @@ export default function PeerCard({
       {helpSkills.length > 0 && (
         <div>
           <p className="text-xs font-medium text-[var(--color-loop-muted)] mb-2 uppercase tracking-wide">
-            Needs Help &mdash; Skills
+            Wants to Learn &mdash; Skills
           </p>
           <div className="flex flex-wrap gap-1.5">
             {helpSkills.map((skill) => (
