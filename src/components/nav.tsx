@@ -10,7 +10,10 @@ const NAV_LINKS = [
   { href: "/dashboard", label: "Dashboard" },
   { href: "/simulator", label: "Simulator" },
   { href: "/peers", label: "Peers" },
+  { href: "/spots", label: "Spots" },
+  { href: "/pulse", label: "Pulse" },
   { href: "/campus", label: "Campus" },
+  { href: "/wrapped", label: "Wrapped" },
 ];
 
 export default function Nav() {

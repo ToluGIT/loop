@@ -235,3 +235,128 @@ export const CAMPUS_STATS = {
     { week: "W8", avgConfidence: 61 },
   ],
 };
+
+// ============================================================
+// Stress Pulse — Anonymous Mood Check-In Data
+// ============================================================
+
+export const PULSE_DATA = {
+  currentWeek: "W8",
+  totalResponses: 847,
+  totalStudents: 247,
+  modules: [
+    { code: "CMM525", name: "Software Development 3", responses: 52, moods: { confident: 14, okay: 22, struggling: 12, overwhelmed: 4 }, trend: "stable" as const },
+    { code: "CMM526", name: "Database Systems", responses: 45, moods: { confident: 8, okay: 15, struggling: 16, overwhelmed: 6 }, trend: "declining" as const },
+    { code: "CMM527", name: "Interaction Design", responses: 38, moods: { confident: 16, okay: 14, struggling: 6, overwhelmed: 2 }, trend: "improving" as const },
+    { code: "CMM528", name: "Network Security", responses: 41, moods: { confident: 6, okay: 12, struggling: 15, overwhelmed: 8 }, trend: "declining" as const },
+    { code: "CMM529", name: "Cloud Computing", responses: 36, moods: { confident: 10, okay: 14, struggling: 9, overwhelmed: 3 }, trend: "stable" as const },
+    { code: "CMM530", name: "Artificial Intelligence", responses: 48, moods: { confident: 5, okay: 11, struggling: 18, overwhelmed: 14 }, trend: "declining" as const },
+    { code: "CMM507", name: "Computing Research Methods", responses: 44, moods: { confident: 4, okay: 10, struggling: 17, overwhelmed: 13 }, trend: "declining" as const },
+    { code: "CMM531", name: "Honours Project", responses: 29, moods: { confident: 7, okay: 8, struggling: 9, overwhelmed: 5 }, trend: "stable" as const },
+  ],
+  weeklyMood: [
+    { week: "W1", avgMood: 3.4 },
+    { week: "W2", avgMood: 3.2 },
+    { week: "W3", avgMood: 3.0 },
+    { week: "W4", avgMood: 2.6 },
+    { week: "W5", avgMood: 2.3 },
+    { week: "W6", avgMood: 2.1 },
+    { week: "W7", avgMood: 2.4 },
+    { week: "W8", avgMood: 2.2 },
+  ],
+};
+
+// ============================================================
+// Study Spots — Campus Building Data
+// ============================================================
+
+export const STUDY_SPOTS = [
+  {
+    id: "library",
+    name: "Sir Ian Wood Library",
+    type: "library" as const,
+    floor: "Floors 1-4",
+    peersNow: 23,
+    capacity: 200,
+    topSkills: ["Research Methods", "Academic Writing", "Databases"],
+    activeGroups: 4,
+    noiseLevel: "quiet" as const,
+  },
+  {
+    id: "lab-n",
+    name: "N Block Computer Lab",
+    type: "lab" as const,
+    floor: "Ground Floor",
+    peersNow: 15,
+    capacity: 60,
+    topSkills: ["Python", "Java", "Web Development"],
+    activeGroups: 2,
+    noiseLevel: "moderate" as const,
+  },
+  {
+    id: "lab-s",
+    name: "S Block Lab",
+    type: "lab" as const,
+    floor: "Floor 2",
+    peersNow: 8,
+    capacity: 40,
+    topSkills: ["Network Security", "Cloud Computing", "Linux"],
+    activeGroups: 1,
+    noiseLevel: "moderate" as const,
+  },
+  {
+    id: "union",
+    name: "RGU:Union",
+    type: "social" as const,
+    floor: "Main Hall",
+    peersNow: 31,
+    capacity: 150,
+    topSkills: ["Group Projects", "Interaction Design", "Presentations"],
+    activeGroups: 5,
+    noiseLevel: "loud" as const,
+  },
+  {
+    id: "ishw",
+    name: "Sir Ian Wood Building",
+    type: "building" as const,
+    floor: "Floors 1-5",
+    peersNow: 42,
+    capacity: 300,
+    topSkills: ["Software Dev", "AI", "Honours Project"],
+    activeGroups: 6,
+    noiseLevel: "moderate" as const,
+  },
+  {
+    id: "riverside",
+    name: "Riverside East",
+    type: "building" as const,
+    floor: "Floor 3",
+    peersNow: 11,
+    capacity: 80,
+    topSkills: ["UX Design", "Figma", "Prototyping"],
+    activeGroups: 2,
+    noiseLevel: "quiet" as const,
+  },
+  {
+    id: "cafe",
+    name: "Garthdee Cafe",
+    type: "social" as const,
+    floor: "Ground Floor",
+    peersNow: 18,
+    capacity: 80,
+    topSkills: ["Study Groups", "Peer Review", "Exam Prep"],
+    activeGroups: 3,
+    noiseLevel: "loud" as const,
+  },
+  {
+    id: "health",
+    name: "Health Building Study Room",
+    type: "library" as const,
+    floor: "Floor 2",
+    peersNow: 6,
+    capacity: 30,
+    topSkills: ["Quiet Study", "Dissertation Writing", "Statistics"],
+    activeGroups: 0,
+    noiseLevel: "quiet" as const,
+  },
+];

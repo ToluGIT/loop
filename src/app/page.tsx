@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { BarChart3, SlidersHorizontal, Users, ArrowRight } from "lucide-react";
+import { BarChart3, SlidersHorizontal, Users, ArrowRight, Heart, MapPin, Sparkles } from "lucide-react";
 import ThemeToggle from "@/components/theme-toggle";
 
 export default function Home() {
@@ -142,19 +142,43 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Large card — spans 2 cols */}
+          {/* Small card — Stress Pulse */}
+          <div className="loop-card-interactive p-6 group flex flex-col justify-between">
+            <div className="w-10 h-10 rounded-lg bg-[var(--color-loop-red)]/10 flex items-center justify-center mb-4 group-hover:bg-[var(--color-loop-red)]/20 transition-colors">
+              <Heart className="w-5 h-5 text-[var(--color-loop-red)]" />
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold mb-1">Stress Pulse</h3>
+              <p className="text-sm text-[var(--color-loop-muted)]">
+                Anonymous mood check-ins. See how your cohort is really doing.
+              </p>
+            </div>
+          </div>
+
+          {/* Small card — Study Spots */}
+          <div className="loop-card-interactive p-6 group flex flex-col justify-between">
+            <div className="w-10 h-10 rounded-lg bg-[var(--color-loop-amber)]/10 flex items-center justify-center mb-4 group-hover:bg-[var(--color-loop-amber)]/20 transition-colors">
+              <MapPin className="w-5 h-5 text-[var(--color-loop-amber)]" />
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold mb-1">Study Spots</h3>
+              <p className="text-sm text-[var(--color-loop-muted)]">
+                Find where peers are studying on campus. Check in and join groups.
+              </p>
+            </div>
+          </div>
+
+          {/* Large card — Degree Wrapped, spans 2 cols */}
           <div className="loop-card-interactive p-8 span-2 group">
             <div className="flex items-start gap-5">
-              <div className="w-12 h-12 rounded-xl bg-[var(--color-loop-amber)]/10 flex items-center justify-center shrink-0 group-hover:bg-[var(--color-loop-amber)]/20 transition-colors">
-                <svg className="w-6 h-6 text-[var(--color-loop-amber)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 2L2 7l10 5 10-5-10-5z" /><path d="M2 17l10 5 10-5" /><path d="M2 12l10 5 10-5" />
-                </svg>
+              <div className="w-12 h-12 rounded-xl bg-[var(--color-loop-primary)]/10 flex items-center justify-center shrink-0 group-hover:bg-[var(--color-loop-primary)]/20 transition-colors">
+                <Sparkles className="w-6 h-6 text-[var(--color-loop-primary)]" />
               </div>
               <div>
-                <h3 className="text-xl font-semibold mb-2">Campus Analytics</h3>
+                <h3 className="text-xl font-semibold mb-2">Degree Wrapped</h3>
                 <p className="text-[var(--color-loop-muted)] leading-relaxed">
-                  See how you compare. Anonymous, aggregated stats across all
-                  computing students — module performance, classification trends, and more.
+                  Your year in review — Spotify Wrapped, but for your degree.
+                  Shareable story cards with your best modules, cohort rank, and growth.
                 </p>
               </div>
             </div>
@@ -167,6 +191,7 @@ export default function Home() {
         <div className="loop-card inline-flex gap-8 px-8 py-5 mx-auto w-full justify-center">
           <Stat value="247" label="Students" />
           <Stat value="8" label="Modules" />
+          <Stat value="7" label="Features" />
           <Stat value="Free" label="Always" />
         </div>
       </section>
