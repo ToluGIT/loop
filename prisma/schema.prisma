@@ -13,6 +13,7 @@ model User {
   email     String   @unique
   course    String
   year      Int
+  avatar    String?
   createdAt DateTime @default(now())
 
   modules      Module[]

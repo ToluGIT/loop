@@ -72,23 +72,23 @@ function BoundaryVisualizer({ average }: { average: number }) {
         {/* Colored zones */}
         <div
           className="absolute inset-y-0 left-0"
-          style={{ width: "40%", background: "#991b1b", opacity: 0.4 }}
+          style={{ width: "40%", background: "#991b1b", opacity: 0.6 }}
         />
         <div
           className="absolute inset-y-0"
-          style={{ left: "40%", width: "10%", background: "#ef4444", opacity: 0.4 }}
+          style={{ left: "40%", width: "10%", background: "#ef4444", opacity: 0.6 }}
         />
         <div
           className="absolute inset-y-0"
-          style={{ left: "50%", width: "10%", background: "#f97316", opacity: 0.4 }}
+          style={{ left: "50%", width: "10%", background: "#f97316", opacity: 0.6 }}
         />
         <div
           className="absolute inset-y-0"
-          style={{ left: "60%", width: "10%", background: "#22c55e", opacity: 0.4 }}
+          style={{ left: "60%", width: "10%", background: "#22c55e", opacity: 0.6 }}
         />
         <div
           className="absolute inset-y-0"
-          style={{ left: "70%", width: "30%", background: "#f59e0b", opacity: 0.4 }}
+          style={{ left: "70%", width: "30%", background: "#f59e0b", opacity: 0.6 }}
         />
 
         {/* Boundary markers */}

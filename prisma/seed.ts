@@ -19,6 +19,7 @@ async function main() {
         email: student.email,
         course: student.course,
         year: student.year,
+        avatar: student.avatar,
       },
     });
 

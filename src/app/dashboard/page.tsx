@@ -266,15 +266,17 @@ export default function DashboardPage() {
               /{result.totalCredits}
             </span>
           </div>
-          <div className="w-full mt-3 h-2 rounded-full bg-[var(--color-loop-surface-2)] overflow-hidden">
+          <div className="w-full mt-3 h-3 rounded-full bg-[var(--color-loop-surface-2)] overflow-hidden">
             <div
-              className="h-full rounded-full bg-[var(--color-loop-primary)] transition-all"
+              className="h-full rounded-full transition-all"
               style={{
                 width: `${
                   result.totalCredits > 0
                     ? (result.creditsCompleted / result.totalCredits) * 100
                     : 0
                 }%`,
+                background: "linear-gradient(90deg, var(--color-loop-primary), var(--color-loop-primary-hover))",
+                boxShadow: "0 0 8px rgba(249, 115, 84, 0.4)",
               }}
             />
           </div>
@@ -515,10 +517,14 @@ export default function DashboardPage() {
                 <h3 className="font-semibold text-base mb-3">{mod.name}</h3>
 
                 {/* Performance bar */}
-                <div className="w-full h-2 rounded-full bg-[var(--color-loop-surface-2)] overflow-hidden mb-2">
+                <div className="w-full h-3 rounded-full bg-[var(--color-loop-surface-2)] overflow-hidden mb-2">
                   <div
                     className="h-full rounded-full transition-all"
-                    style={{ width: `${barWidth}%`, backgroundColor: barColor }}
+                    style={{
+                      width: `${barWidth}%`,
+                      background: `linear-gradient(90deg, ${barColor}, ${barColor}dd)`,
+                      boxShadow: `0 0 8px ${barColor}66`,
+                    }}
                   />
                 </div>
 

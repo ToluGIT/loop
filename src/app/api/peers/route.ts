@@ -25,6 +25,7 @@ export async function GET(request: NextRequest) {
         email: profile.user.email,
         course: profile.user.course,
         year: profile.user.year,
+        avatar: profile.user.avatar,
       },
     };
   });

@@ -8,6 +8,7 @@ interface User {
   name: string;
   course: string;
   year: number;
+  avatar: string | null;
 }
 
 export default function UserSwitcher({
@@ -47,6 +48,9 @@ export default function UserSwitcher({
         onClick={() => setOpen(!open)}
         className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[var(--color-loop-surface)] border border-[var(--color-loop-border)] hover:border-[var(--color-loop-primary)] transition-colors text-sm"
       >
+        {current?.avatar && (
+          <img src={current.avatar} alt="" className="w-5 h-5 rounded-full" />
+        )}
         <span className="text-[var(--color-loop-text)]">
           {current?.name ?? "Select Student"}
         </span>
@@ -62,17 +66,22 @@ export default function UserSwitcher({
                 onSwitch(u.id);
                 setOpen(false);
               }}
-              className={`w-full text-left px-4 py-3 hover:bg-[var(--color-loop-surface-2)] transition-colors ${
+              className={`w-full text-left px-4 py-3 hover:bg-[var(--color-loop-surface-2)] transition-colors flex items-center gap-3 ${
                 u.id === currentUserId
                   ? "bg-[var(--color-loop-primary)]/10 border-l-2 border-l-[var(--color-loop-primary)]"
                   : ""
               }`}
             >
-              <div className="text-sm font-medium text-[var(--color-loop-text)]">
-                {u.name}
-              </div>
-              <div className="text-xs text-[var(--color-loop-muted)]">
-                {u.course} &middot; Year {u.year}
+              {u.avatar && (
+                <img src={u.avatar} alt="" className="w-8 h-8 rounded-full shrink-0" />
+              )}
+              <div>
+                <div className="text-sm font-medium text-[var(--color-loop-text)]">
+                  {u.name}
+                </div>
+                <div className="text-xs text-[var(--color-loop-muted)]">
+                  {u.course} &middot; Year {u.year}
+                </div>
               </div>
             </button>
           ))}

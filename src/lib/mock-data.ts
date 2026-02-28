@@ -97,6 +97,7 @@ export const DEMO_STUDENTS = [
     email: "a.chen@rgu.ac.uk",
     course: "BSc (Hons) Computer Science",
     year: 3,
+    avatar: "https://api.dicebear.com/9.x/avataaars/svg?seed=Alex&backgroundColor=b6e3f4",
     modules: ["CMM525", "CMM526", "CMM527", "CMM528", "CMM529", "CMM530"],
     grades: {
       CMM525: { "Coursework 1 - Web App": 72, "Coursework 2 - Group Project": 68 },
@@ -118,6 +119,7 @@ export const DEMO_STUDENTS = [
     email: "s.macdonald@rgu.ac.uk",
     course: "BSc (Hons) Cyber Security",
     year: 3,
+    avatar: "https://api.dicebear.com/9.x/avataaars/svg?seed=Sarah&backgroundColor=ffd5dc",
     modules: ["CMM525", "CMM526", "CMM528", "CMM529", "CMM530", "CMM507"],
     grades: {
       CMM525: { "Coursework 1 - Web App": 55, "Coursework 2 - Group Project": 61 },
@@ -139,6 +141,7 @@ export const DEMO_STUDENTS = [
     email: "j.wilson@rgu.ac.uk",
     course: "BSc (Hons) Digital Media",
     year: 3,
+    avatar: "https://api.dicebear.com/9.x/avataaars/svg?seed=Jamie&backgroundColor=c0aede",
     modules: ["CMM525", "CMM527", "CMM529", "CMM530", "CMM507", "CMM531"],
     grades: {
       CMM525: { "Coursework 1 - Web App": 48, "Coursework 2 - Group Project": 52 },
@@ -160,6 +163,7 @@ export const DEMO_STUDENTS = [
     email: "p.sharma@rgu.ac.uk",
     course: "BSc (Hons) Computer Science",
     year: 3,
+    avatar: "https://api.dicebear.com/9.x/avataaars/svg?seed=Priya&backgroundColor=d1f4d1",
     modules: ["CMM525", "CMM526", "CMM528", "CMM529", "CMM530", "CMM531"],
     grades: {
       CMM525: { "Coursework 1 - Web App": 88, "Coursework 2 - Group Project": 92 },
@@ -181,6 +185,7 @@ export const DEMO_STUDENTS = [
     email: "c.fraser@rgu.ac.uk",
     course: "BSc (Hons) Computer Science",
     year: 3,
+    avatar: "https://api.dicebear.com/9.x/avataaars/svg?seed=Calum&backgroundColor=ffdfbf",
     modules: ["CMM525", "CMM526", "CMM527", "CMM528", "CMM529", "CMM507"],
     grades: {
       CMM525: { "Coursework 1 - Web App": 62, "Coursework 2 - Group Project": 58 },

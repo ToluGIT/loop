@@ -16,6 +16,7 @@ interface PeerProfile {
     email: string;
     course: string;
     year: number;
+    avatar: string | null;
   };
 }
 
@@ -203,6 +204,7 @@ export default function PeersPage() {
                 name={peer.user.name}
                 email={peer.user.email}
                 course={peer.user.course}
+                avatar={peer.user.avatar}
                 canTeach={peer.canTeach}
                 needsHelp={peer.needsHelp}
                 bio={peer.bio}
