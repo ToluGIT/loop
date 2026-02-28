@@ -1,8 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
-import Nav from "@/components/nav";
 import PeerCard from "@/components/peer-card";
 
 interface PeerProfile {
@@ -62,18 +60,10 @@ export default function PeersPage() {
   }, [selectedModule, allPeers]);
 
   return (
-    <>
-    <Nav />
-    <div className="min-h-screen px-4 py-8 max-w-6xl mx-auto">
+    <div className="min-h-screen px-4 py-8 max-w-5xl mx-auto animate-fade-in-up">
       {/* Header */}
       <div className="mb-8">
-        <Link
-          href="/"
-          className="text-sm text-[var(--color-loop-muted)] hover:text-[var(--color-loop-text)] transition-colors mb-4 inline-block"
-        >
-          &larr; Back to Loop
-        </Link>
-        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
           Peer{" "}
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-[var(--color-loop-green)] to-[var(--color-loop-gold)]">
             Matching
@@ -167,6 +157,5 @@ export default function PeersPage() {
         </>
       )}
     </div>
-    </>
   );
 }

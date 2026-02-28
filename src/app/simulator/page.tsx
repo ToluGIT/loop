@@ -8,6 +8,8 @@ import {
   getClassificationShort,
 } from "@/lib/classification";
 import type { Classification } from "@/types";
+import UserSwitcher from "@/components/user-switcher";
+import { Sparkles, TrendingUp, AlertTriangle, RotateCcw } from "lucide-react";
 
 // ============================================================
 // Types
@@ -248,6 +250,7 @@ function getClassFromAvg(avg: number): Classification {
 // ============================================================
 
 export default function SimulatorPage() {
+  const [userId, setUserId] = useState("first");
   const [user, setUser] = useState<UserData | null>(null);
   const [modules, setModules] = useState<ModuleData[]>([]);
   const [sliderValues, setSliderValues] = useState<Record<string, number>>({});
@@ -256,11 +259,13 @@ export default function SimulatorPage() {
   const [badgeAnimClass, setBadgeAnimClass] = useState("");
   const prevClassRef = useRef<string>("");
 
-  // Fetch data on mount
+  // Fetch data when userId changes
   useEffect(() => {
     async function fetchData() {
+      setLoading(true);
+      setError(null);
       try {
-        const res = await fetch("/api/simulator/first");
+        const res = await fetch(`/api/simulator/${userId}`);
         if (!res.ok) throw new Error("Failed to fetch simulator data");
         const data = await res.json();
         setUser(data.user);
@@ -283,7 +288,27 @@ export default function SimulatorPage() {
       }
     }
     fetchData();
+  }, [userId]);
+
+  // Switch user handler
+  const handleUserSwitch = useCallback((newUserId: string) => {
+    setUserId(newUserId);
+    prevClassRef.current = "";
   }, []);
+
+  // Apply scenario preset to all ungraded assessments
+  const applyPreset = useCallback(
+    (value: number) => {
+      setSliderValues((prev) => {
+        const updated = { ...prev };
+        for (const key of Object.keys(updated)) {
+          updated[key] = value;
+        }
+        return updated;
+      });
+    },
+    []
+  );
 
   const handleSliderChange = useCallback(
     (assessmentId: string, value: number) => {
@@ -394,16 +419,13 @@ export default function SimulatorPage() {
   const level6Modules = modules.filter((m) => m.level === 6);
 
   return (
-    <div className="min-h-screen pb-20">
+    <div className="min-h-screen pb-20 animate-fade-in-up">
       {/* User context bar */}
       <div className="max-w-5xl mx-auto px-4 pt-6 pb-2 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="text-sm text-[var(--color-loop-muted)]">What-If Simulator</span>
         </div>
-        <div className="text-right">
-          <p className="text-sm font-medium text-[var(--color-loop-text)]">{user.name}</p>
-          <p className="text-xs text-[var(--color-loop-muted)]">{user.course}</p>
-        </div>
+        <UserSwitcher currentUserId={user.id} onSwitch={handleUserSwitch} />
       </div>
 
       <main className="max-w-5xl mx-auto px-4 mt-4 space-y-8">
@@ -505,11 +527,41 @@ export default function SimulatorPage() {
           )}
         </section>
 
-        {/* Instruction */}
-        <div className="text-center">
-          <p className="text-sm text-[var(--color-loop-muted)] bg-[var(--color-loop-surface)] inline-block px-4 py-2 rounded-full border border-[var(--color-loop-border)]">
-            Drag the sliders below to simulate your grades on unsubmitted assessments
+        {/* Scenario Presets */}
+        <div className="text-center space-y-3">
+          <p className="text-sm text-[var(--color-loop-muted)]">
+            Quick scenarios &mdash; or drag sliders below for fine control
           </p>
+          <div className="flex flex-wrap items-center justify-center gap-2">
+            <button
+              onClick={() => applyPreset(100)}
+              className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[var(--color-loop-surface)] border border-[var(--color-loop-border)] hover:border-[var(--color-loop-green)] hover:bg-[var(--color-loop-green)]/10 text-sm text-[var(--color-loop-text)] transition-colors"
+            >
+              <Sparkles size={14} className="text-[var(--color-loop-green)]" />
+              Ace Everything
+            </button>
+            <button
+              onClick={() => applyPreset(75)}
+              className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[var(--color-loop-surface)] border border-[var(--color-loop-border)] hover:border-blue-400 hover:bg-blue-400/10 text-sm text-[var(--color-loop-text)] transition-colors"
+            >
+              <TrendingUp size={14} className="text-blue-400" />
+              Strong Pass
+            </button>
+            <button
+              onClick={() => applyPreset(42)}
+              className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[var(--color-loop-surface)] border border-[var(--color-loop-border)] hover:border-[var(--color-loop-amber)] hover:bg-[var(--color-loop-amber)]/10 text-sm text-[var(--color-loop-text)] transition-colors"
+            >
+              <AlertTriangle size={14} className="text-[var(--color-loop-amber)]" />
+              Barely Pass
+            </button>
+            <button
+              onClick={() => applyPreset(50)}
+              className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[var(--color-loop-surface)] border border-[var(--color-loop-border)] hover:border-[var(--color-loop-muted)] hover:bg-[var(--color-loop-surface-2)] text-sm text-[var(--color-loop-muted)] transition-colors"
+            >
+              <RotateCcw size={14} />
+              Reset
+            </button>
+          </div>
         </div>
 
         {/* Module Cards */}

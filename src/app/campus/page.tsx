@@ -1,6 +1,5 @@
 "use client";
 
-import Nav from "@/components/nav";
 import { CAMPUS_STATS } from "@/lib/mock-data";
 import {
   PieChart,
@@ -25,17 +24,16 @@ const CLASSIFICATION_DATA = [
 const sortedModules = [...CAMPUS_STATS.moduleStats].sort((a, b) => b.avg - a.avg);
 
 function avgColor(avg: number) {
-  if (avg >= 65) return "text-[var(--color-loop-green)]";
-  if (avg >= 55) return "text-[var(--color-loop-gold)]";
+  if (avg >= 70) return "text-[var(--color-loop-green)]";
+  if (avg >= 60) return "text-[var(--color-loop-gold)]";
+  if (avg >= 50) return "text-[var(--color-loop-amber)]";
   return "text-[var(--color-loop-red)]";
 }
 
 export default function CampusPage() {
   return (
     <div className="min-h-screen">
-      <Nav />
-
-      <main className="max-w-6xl mx-auto px-4 py-8">
+      <main className="max-w-5xl mx-auto px-4 py-8 animate-fade-in-up">
         {/* Page header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold tracking-tight mb-1">Campus Stats</h1>
@@ -45,7 +43,7 @@ export default function CampusPage() {
         </div>
 
         {/* Headline stats */}
-        <div className="grid grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
           <div className="loop-card p-6 text-center">
             <div className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[var(--color-loop-primary)] to-[var(--color-loop-primary-hover)]">
               {CAMPUS_STATS.totalStudents}
@@ -75,8 +73,8 @@ export default function CampusPage() {
           {/* Classification Breakdown */}
           <div className="loop-card p-6">
             <h2 className="text-lg font-semibold mb-4">Classification Breakdown</h2>
-            <div className="flex items-center">
-              <div className="w-1/2">
+            <div className="flex flex-col sm:flex-row items-center">
+              <div className="w-full sm:w-1/2">
                 <ResponsiveContainer width="100%" height={200}>
                   <PieChart>
                     <Pie
@@ -105,7 +103,7 @@ export default function CampusPage() {
                   </PieChart>
                 </ResponsiveContainer>
               </div>
-              <div className="w-1/2 flex flex-col gap-2">
+              <div className="w-full sm:w-1/2 flex flex-wrap sm:flex-col gap-2 mt-4 sm:mt-0 justify-center">
                 {CLASSIFICATION_DATA.map((entry) => (
                   <div key={entry.name} className="flex items-center gap-2 text-sm">
                     <span

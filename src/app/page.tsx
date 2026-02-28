@@ -1,8 +1,9 @@
 import Link from "next/link";
+import { BarChart3, SlidersHorizontal, Users } from "lucide-react";
 
 export default function Home() {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-4">
+    <div className="min-h-screen flex flex-col items-center justify-center px-4 animate-fade-in-up">
       {/* Hero */}
       <div className="text-center max-w-3xl mx-auto">
         <div className="mb-6 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[var(--color-loop-surface)] border border-[var(--color-loop-border)] text-sm text-[var(--color-loop-muted)]">
@@ -10,7 +11,7 @@ export default function Home() {
           Built at RGU Hacks 2026
         </div>
 
-        <h1 className="text-5xl sm:text-7xl font-bold tracking-tight mb-6">
+        <h1 className="text-4xl sm:text-6xl font-bold tracking-tight mb-6">
           Know your{" "}
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-[var(--color-loop-primary)] to-[var(--color-loop-primary-hover)]">
             grade
@@ -47,26 +48,26 @@ export default function Home() {
       </div>
 
       {/* Feature Cards */}
-      <div className="mt-24 grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-4xl mx-auto w-full px-4">
+      <div className="mt-20 grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-4xl mx-auto w-full px-4">
         <FeatureCard
-          icon="📊"
+          icon={<BarChart3 className="w-5 h-5 text-[var(--color-loop-primary)]" />}
           title="Grade Projection"
           description="See your projected degree classification update in real-time as you enter grades."
         />
         <FeatureCard
-          icon="🎯"
+          icon={<SlidersHorizontal className="w-5 h-5 text-[var(--color-loop-primary)]" />}
           title="What-If Simulator"
           description='Drag the slider to answer "What do I need on my exam to get a 2:1?"'
         />
         <FeatureCard
-          icon="🤝"
+          icon={<Users className="w-5 h-5 text-[var(--color-loop-primary)]" />}
           title="Peer Matching"
           description="Struggling with a module? Find classmates who can help — for free."
         />
       </div>
 
       {/* Stats Bar */}
-      <div className="mt-16 flex flex-wrap gap-8 justify-center text-center text-[var(--color-loop-muted)]">
+      <div className="mt-12 loop-card inline-flex gap-8 px-8 py-4 text-center text-[var(--color-loop-muted)]">
         <Stat value="247" label="Students" />
         <Stat value="8" label="Modules" />
         <Stat value="Free" label="Always" />
@@ -84,13 +85,15 @@ function FeatureCard({
   title,
   description,
 }: {
-  icon: string;
+  icon: React.ReactNode;
   title: string;
   description: string;
 }) {
   return (
     <div className="loop-card p-6">
-      <div className="text-3xl mb-3">{icon}</div>
+      <div className="w-10 h-10 rounded-lg bg-[var(--color-loop-primary)]/10 flex items-center justify-center mb-3">
+        {icon}
+      </div>
       <h3 className="text-lg font-semibold mb-2">{title}</h3>
       <p className="text-sm text-[var(--color-loop-muted)]">{description}</p>
     </div>
