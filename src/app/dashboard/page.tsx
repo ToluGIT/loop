@@ -73,6 +73,7 @@ export default function DashboardPage() {
   const [modules, setModules] = useState<ModuleData[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedModules, setExpandedModules] = useState<Set<string>>(new Set());
+  const [showAllInsights, setShowAllInsights] = useState(false);
 
   useEffect(() => {
     setLoading(true);
@@ -253,6 +254,16 @@ export default function DashboardPage() {
               ? `${Math.round(result.confidence * 100)}% confidence`
               : "No grades yet"}
           </p>
+          {(result.level5Average !== null || result.level6Average !== null) && (
+            <div className="flex items-center gap-3 mt-3 pt-3 border-t border-[var(--color-loop-border)] text-sm">
+              {result.level5Average !== null && (
+                <span className="text-[var(--color-loop-accent)]">L5: {result.level5Average}%</span>
+              )}
+              {result.level6Average !== null && (
+                <span className="text-[var(--color-loop-primary)]">L6: {result.level6Average}%</span>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Credits Progress */}
@@ -295,7 +306,7 @@ export default function DashboardPage() {
             {riskStyle.label}
           </p>
           {risk.dropThreshold !== null && (
-            <p className="text-xs text-[var(--color-loop-muted)] mt-2">
+            <p className="text-sm text-[var(--color-loop-muted)] mt-2">
               Safe above {risk.dropThreshold}% avg
             </p>
           )}
@@ -305,7 +316,7 @@ export default function DashboardPage() {
       {/* Upcoming Deadlines */}
       {upcomingDeadlines.length > 0 && (
         <div className="mb-8">
-          <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+          <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
             <Clock size={18} className="text-[var(--color-loop-primary)]" />
             Upcoming Deadlines
           </h2>
@@ -319,19 +330,19 @@ export default function DashboardPage() {
                     status.urgent ? "border border-red-500/30 glow-urgent" : ""
                   }`}
                 >
-                  <p className="text-xs font-mono text-[var(--color-loop-muted)]">
+                  <p className="text-sm font-mono text-[var(--color-loop-muted)]">
                     {item.moduleCode}
                   </p>
-                  <p className="text-sm font-medium text-[var(--color-loop-text)] mt-1 line-clamp-1">
+                  <p className="text-base font-medium text-[var(--color-loop-text)] mt-1 line-clamp-1">
                     {item.assessment.name}
                   </p>
                   <div className="flex items-center gap-1.5 mt-2">
                     <Calendar size={12} className={status.color} />
-                    <span className={`text-xs font-medium ${status.color}`}>
+                    <span className={`text-sm font-medium ${status.color}`}>
                       {formatDate(item.assessment.dueDate)}
                     </span>
                   </div>
-                  <p className={`text-xs font-bold mt-1 ${status.color}`}>
+                  <p className={`text-sm font-bold mt-1 ${status.color}`}>
                     {status.label}
                   </p>
                 </div>
@@ -341,36 +352,12 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {/* Level Averages */}
-      {(result.level5Average !== null || result.level6Average !== null) && (
-        <div className="flex flex-wrap justify-center gap-4 mb-8">
-          {result.level5Average !== null && (
-            <div className="loop-card p-4 text-center flex-1 min-w-[200px] max-w-xs">
-              <p className="text-xs uppercase tracking-widest text-[var(--color-loop-muted)] mb-1">
-                Level 5 Average
-              </p>
-              <p className="text-2xl font-bold text-[var(--color-loop-accent)]">{result.level5Average}%</p>
-              <p className="text-xs text-[var(--color-loop-muted)]">weighted 1/3</p>
-            </div>
-          )}
-          {result.level6Average !== null && (
-            <div className="loop-card p-4 text-center flex-1 min-w-[200px] max-w-xs">
-              <p className="text-xs uppercase tracking-widest text-[var(--color-loop-muted)] mb-1">
-                Level 6 Average
-              </p>
-              <p className="text-2xl font-bold text-[var(--color-loop-primary)]">{result.level6Average}%</p>
-              <p className="text-xs text-[var(--color-loop-muted)]">weighted 2/3</p>
-            </div>
-          )}
-        </div>
-      )}
-
       {/* Smart Insights */}
       {insights.length > 0 && (
         <div className="mb-8">
-          <h2 className="text-lg font-semibold mb-4">Smart Insights</h2>
+          <h2 className="text-xl font-semibold mb-4">Smart Insights</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {insights.map((insight, i) => (
+            {insights.slice(0, showAllInsights ? insights.length : 4).map((insight, i) => (
               <div
                 key={i}
                 className={`loop-card p-4 border ${insightTypeColors[insight.type]}`}
@@ -385,10 +372,10 @@ export default function DashboardPage() {
                     {insight.icon === "Award" && "★"}
                   </span>
                   <div className="min-w-0">
-                    <p className="text-sm font-semibold text-[var(--color-loop-text)]">
+                    <p className="text-base font-semibold text-[var(--color-loop-text)]">
                       {insight.title}
                     </p>
-                    <p className="text-xs text-[var(--color-loop-muted)] mt-1 leading-relaxed">
+                    <p className="text-sm text-[var(--color-loop-muted)] mt-1 leading-relaxed">
                       {insight.description}
                     </p>
                   </div>
@@ -396,13 +383,21 @@ export default function DashboardPage() {
               </div>
             ))}
           </div>
+          {insights.length > 4 && (
+            <button
+              onClick={() => setShowAllInsights(!showAllInsights)}
+              className="mt-3 text-sm font-medium text-[var(--color-loop-primary)] hover:text-[var(--color-loop-primary-hover)] transition-colors cursor-pointer"
+            >
+              {showAllInsights ? "Show less" : `Show ${insights.length - 4} more insights`}
+            </button>
+          )}
         </div>
       )}
 
       {/* Highest Impact Assessments */}
       {topLeverage.length > 0 && (
         <div className="mb-8">
-          <h2 className="text-lg font-semibold mb-4">Highest Impact Assessments</h2>
+          <h2 className="text-xl font-semibold mb-4">Highest Impact Assessments</h2>
           <div className="loop-card overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
@@ -455,7 +450,7 @@ export default function DashboardPage() {
       )}
 
       {/* Module Cards - Expandable */}
-      <h2 className="text-lg font-semibold mb-4">Modules</h2>
+      <h2 className="text-xl font-semibold mb-4">Modules</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {moduleStats.map((mod) => {
           const barColor =
@@ -494,22 +489,22 @@ export default function DashboardPage() {
                     ) : (
                       <ChevronRight size={14} className="text-[var(--color-loop-muted)]" />
                     )}
-                    <span className="text-xs font-mono text-[var(--color-loop-muted)]">
+                    <span className="text-sm font-mono text-[var(--color-loop-muted)]">
                       {mod.code}
                     </span>
                     <span className="text-[var(--color-loop-border)]">|</span>
-                    <span className="text-xs text-[var(--color-loop-muted)]">
+                    <span className="text-sm text-[var(--color-loop-muted)]">
                       L{mod.level} &middot; {mod.credits} credits
                     </span>
                   </div>
                   <div className="flex items-center gap-3">
                     {deadlineStatus && deadlineStatus.urgent && (
-                      <span className={`text-xs font-medium ${deadlineStatus.color} flex items-center gap-1`}>
+                      <span className={`text-sm font-medium ${deadlineStatus.color} flex items-center gap-1`}>
                         <Clock size={10} />
                         {deadlineStatus.label}
                       </span>
                     )}
-                    <span className="text-xs text-[var(--color-loop-muted)]">
+                    <span className="text-sm text-[var(--color-loop-muted)]">
                       {mod.gradedCount}/{mod.totalCount} graded
                     </span>
                   </div>
@@ -534,7 +529,7 @@ export default function DashboardPage() {
                       ? `${Math.round(mod.average * 10) / 10}%`
                       : "No grades"}
                   </span>
-                  <span className="text-xs text-[var(--color-loop-muted)]">
+                  <span className="text-sm text-[var(--color-loop-muted)]">
                     {Math.round(mod.completionRatio * 100)}% complete
                   </span>
                 </div>
@@ -551,7 +546,7 @@ export default function DashboardPage() {
                         className="flex items-center justify-between py-2 text-sm"
                       >
                         <div className="flex items-center gap-3 min-w-0">
-                          <span className="text-xs font-mono text-[var(--color-loop-muted)] w-10 shrink-0">
+                          <span className="text-sm font-mono text-[var(--color-loop-muted)] w-12 shrink-0">
                             {Math.round(a.weight * 100)}%
                           </span>
                           <span className="text-[var(--color-loop-text)] truncate">
@@ -560,7 +555,7 @@ export default function DashboardPage() {
                         </div>
                         <div className="flex items-center gap-3 shrink-0">
                           {a.dueDate && (
-                            <span className={`text-xs flex items-center gap-1 ${dlStatus.color}`}>
+                            <span className={`text-sm flex items-center gap-1 ${dlStatus.color}`}>
                               <Calendar size={10} />
                               {formatDate(a.dueDate)}
                             </span>
@@ -582,7 +577,7 @@ export default function DashboardPage() {
                               {a.grade.score}%
                             </span>
                           ) : (
-                            <span className="text-xs text-[var(--color-loop-muted)] italic">
+                            <span className="text-sm text-[var(--color-loop-muted)] italic">
                               Pending
                             </span>
                           )}

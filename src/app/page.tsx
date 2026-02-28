@@ -1,9 +1,14 @@
 import Link from "next/link";
 import { BarChart3, SlidersHorizontal, Users, ArrowRight } from "lucide-react";
+import ThemeToggle from "@/components/theme-toggle";
 
 export default function Home() {
   return (
     <div className="min-h-screen animate-fade-in-up">
+      {/* Floating theme toggle */}
+      <div className="fixed top-5 right-5 z-50">
+        <ThemeToggle />
+      </div>
       {/* Hero — Asymmetric layout */}
       <section className="max-w-5xl mx-auto px-4 pt-20 pb-16 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
         {/* Left: Text */}
