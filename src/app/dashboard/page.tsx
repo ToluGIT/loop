@@ -177,14 +177,14 @@ export default function DashboardPage() {
     success: "border-emerald-500/30 bg-emerald-500/5",
     warning: "border-amber-500/30 bg-amber-500/5",
     info: "border-blue-500/30 bg-blue-500/5",
-    action: "border-purple-500/30 bg-purple-500/5",
+    action: "border-[var(--color-loop-primary)]/30 bg-[var(--color-loop-primary)]/5",
   };
 
   const insightIconColors: Record<string, string> = {
     success: "text-emerald-400",
     warning: "text-amber-400",
     info: "text-blue-400",
-    action: "text-purple-400",
+    action: "text-[var(--color-loop-primary)]",
   };
 
   if (loading) {
@@ -347,7 +347,7 @@ export default function DashboardPage() {
               <p className="text-xs uppercase tracking-widest text-[var(--color-loop-muted)] mb-1">
                 Level 5 Average
               </p>
-              <p className="text-2xl font-bold text-blue-300">{result.level5Average}%</p>
+              <p className="text-2xl font-bold text-[var(--color-loop-accent)]">{result.level5Average}%</p>
               <p className="text-xs text-[var(--color-loop-muted)]">weighted 1/3</p>
             </div>
           )}
@@ -356,7 +356,7 @@ export default function DashboardPage() {
               <p className="text-xs uppercase tracking-widest text-[var(--color-loop-muted)] mb-1">
                 Level 6 Average
               </p>
-              <p className="text-2xl font-bold text-purple-300">{result.level6Average}%</p>
+              <p className="text-2xl font-bold text-[var(--color-loop-primary)]">{result.level6Average}%</p>
               <p className="text-xs text-[var(--color-loop-muted)]">weighted 2/3</p>
             </div>
           )}

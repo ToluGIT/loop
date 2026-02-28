@@ -13,13 +13,13 @@ interface PeerCardProps {
 }
 
 const avatarColors = [
-  "bg-indigo-600",
+  "bg-orange-600",
   "bg-emerald-600",
   "bg-amber-600",
   "bg-rose-600",
   "bg-cyan-600",
-  "bg-purple-600",
   "bg-teal-600",
+  "bg-sky-600",
   "bg-pink-600",
 ];
 
@@ -150,8 +150,8 @@ export default function PeerCard({
                 key={skill}
                 className={`px-2.5 py-1 rounded-full text-xs font-medium ${
                   isHighlighted(skill, highlightModule, highlightSkill)
-                    ? "bg-blue-500 text-white ring-2 ring-blue-500 ring-offset-1 ring-offset-[var(--color-loop-surface)]"
-                    : "bg-blue-500/15 text-blue-400"
+                    ? "bg-[var(--color-loop-accent)] text-white ring-2 ring-[var(--color-loop-accent)] ring-offset-1 ring-offset-[var(--color-loop-surface)]"
+                    : "bg-[var(--color-loop-accent)]/15 text-[var(--color-loop-accent)]"
                 }`}
               >
                 {skill}

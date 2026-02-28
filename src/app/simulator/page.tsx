@@ -148,8 +148,8 @@ function ModuleCard({
   moduleAverage: number | null;
 }) {
   const levelBadgeColor = mod.level === 6
-    ? "bg-purple-500/20 text-purple-300 border-purple-500/30"
-    : "bg-blue-500/20 text-blue-300 border-blue-500/30";
+    ? "bg-[var(--color-loop-primary)]/20 text-[var(--color-loop-primary)] border-[var(--color-loop-primary)]/30"
+    : "bg-[var(--color-loop-accent)]/20 text-[var(--color-loop-accent)] border-[var(--color-loop-accent)]/30";
 
   return (
     <div className="loop-card p-5">
@@ -495,7 +495,7 @@ export default function SimulatorPage() {
           <div className="flex items-center justify-center gap-8 text-sm">
             {result.level5Average !== null && (
               <div className="text-center">
-                <p className="text-lg font-bold font-mono text-blue-300">
+                <p className="text-lg font-bold font-mono text-[var(--color-loop-accent)]">
                   {result.level5Average.toFixed(1)}%
                 </p>
                 <p className="text-xs text-[var(--color-loop-muted)]">Level 5 (1/3 weight)</p>
@@ -503,7 +503,7 @@ export default function SimulatorPage() {
             )}
             {result.level6Average !== null && (
               <div className="text-center">
-                <p className="text-lg font-bold font-mono text-purple-300">
+                <p className="text-lg font-bold font-mono text-[var(--color-loop-primary)]">
                   {result.level6Average.toFixed(1)}%
                 </p>
                 <p className="text-xs text-[var(--color-loop-muted)]">Level 6 (2/3 weight)</p>
@@ -571,9 +571,9 @@ export default function SimulatorPage() {
             </button>
             <button
               onClick={() => applyPreset(75)}
-              className="loop-btn flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[var(--color-loop-surface)] border border-[var(--color-loop-border)] hover:border-blue-400 hover:bg-blue-400/10 hover:shadow-[0_0_16px_rgba(96,165,250,0.15)] text-sm text-[var(--color-loop-text)] transition-all"
+              className="loop-btn flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[var(--color-loop-surface)] border border-[var(--color-loop-border)] hover:border-[var(--color-loop-accent)] hover:bg-[var(--color-loop-accent)]/10 hover:shadow-[0_0_16px_rgba(59,130,246,0.15)] text-sm text-[var(--color-loop-text)] transition-all"
             >
-              <TrendingUp size={14} className="text-blue-400" />
+              <TrendingUp size={14} className="text-[var(--color-loop-accent)]" />
               Strong Pass
             </button>
             <button
@@ -596,8 +596,8 @@ export default function SimulatorPage() {
         {/* Module Cards */}
         {level5Modules.length > 0 && (
           <section>
-            <h2 className="text-lg font-semibold text-blue-300 mb-4 flex items-center gap-2">
-              <span className="inline-block w-3 h-3 rounded-full bg-blue-500" />
+            <h2 className="text-lg font-semibold text-[var(--color-loop-accent)] mb-4 flex items-center gap-2">
+              <span className="inline-block w-3 h-3 rounded-full bg-[var(--color-loop-accent)]" />
               Level 5 Modules
               <span className="text-xs text-[var(--color-loop-muted)] font-normal">(1/3 weight)</span>
             </h2>
@@ -617,8 +617,8 @@ export default function SimulatorPage() {
 
         {level6Modules.length > 0 && (
           <section>
-            <h2 className="text-lg font-semibold text-purple-300 mb-4 flex items-center gap-2">
-              <span className="inline-block w-3 h-3 rounded-full bg-purple-500" />
+            <h2 className="text-lg font-semibold text-[var(--color-loop-primary)] mb-4 flex items-center gap-2">
+              <span className="inline-block w-3 h-3 rounded-full bg-[var(--color-loop-primary)]" />
               Level 6 Modules
               <span className="text-xs text-[var(--color-loop-muted)] font-normal">(2/3 weight)</span>
             </h2>

@@ -44,13 +44,19 @@ export default function Nav() {
               <Link
                 key={href}
                 href={href}
-                className={`relative px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                className={`relative px-3 py-1.5 text-sm font-medium transition-all ${
                   active
-                    ? "bg-[var(--color-loop-primary)] text-white shadow-[0_0_12px_rgba(99,102,241,0.3)]"
-                    : "text-[var(--color-loop-muted)] hover:text-[var(--color-loop-text)] hover:bg-[var(--color-loop-surface-2)]"
+                    ? "text-[var(--color-loop-primary)]"
+                    : "text-[var(--color-loop-muted)] hover:text-[var(--color-loop-text)]"
                 }`}
               >
                 {label}
+                {active && (
+                  <span
+                    className="absolute bottom-0 left-1/2 -translate-x-1/2 h-0.5 rounded-full bg-[var(--color-loop-primary)]"
+                    style={{ width: "60%", animation: "underline-in 0.25s ease-out forwards", transformOrigin: "left" }}
+                  />
+                )}
               </Link>
             );
           })}
@@ -95,10 +101,10 @@ export default function Nav() {
                 key={href}
                 href={href}
                 onClick={() => setMobileOpen(false)}
-                className={`px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                className={`px-3 py-2.5 rounded-lg text-sm font-medium transition-colors border-l-2 ${
                   active
-                    ? "bg-[var(--color-loop-primary)] text-white"
-                    : "text-[var(--color-loop-muted)] hover:text-[var(--color-loop-text)] hover:bg-[var(--color-loop-surface-2)]"
+                    ? "border-l-[var(--color-loop-primary)] text-[var(--color-loop-primary)] bg-[var(--color-loop-primary)]/5"
+                    : "border-l-transparent text-[var(--color-loop-muted)] hover:text-[var(--color-loop-text)] hover:bg-[var(--color-loop-surface-2)]"
                 }`}
               >
                 {label}

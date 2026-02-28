@@ -1,25 +1,28 @@
 @import "tailwindcss";
 
 /* ============================================
-   THEME TOKENS — Dark (default) & Light
+   DESIGN SYSTEM: "Clean & Friendly"
+   Warm coral + soft neutrals
    ============================================ */
 
 @theme inline {
-  --color-loop-gold: #f59e0b;
-  --color-loop-green: #22c55e;
-  --color-loop-amber: #f97316;
-  --color-loop-red: #ef4444;
+  /* Warm accent palette */
+  --color-loop-gold: #FBBF24;
+  --color-loop-green: #34D399;
+  --color-loop-amber: #FBBF24;
+  --color-loop-red: #F87171;
 
-  /* Dark theme defaults */
-  --color-loop-bg: #0a0a0f;
-  --color-loop-surface: #131320;
-  --color-loop-surface-2: #1c1c2e;
-  --color-loop-border: #2a2a3e;
-  --color-loop-text: #e4e4ed;
-  --color-loop-muted: #8888a0;
-  --color-loop-primary: #6366f1;
-  --color-loop-primary-hover: #818cf8;
-  --color-loop-nav-bg: rgba(19, 19, 32, 0.85);
+  /* Dark theme (default) */
+  --color-loop-bg: #111116;
+  --color-loop-surface: #1A1A22;
+  --color-loop-surface-2: #232330;
+  --color-loop-border: #2E2E3E;
+  --color-loop-text: #F0F0F5;
+  --color-loop-muted: #8E90A6;
+  --color-loop-primary: #F97354;
+  --color-loop-primary-hover: #FF8A6E;
+  --color-loop-accent: #3B82F6;
+  --color-loop-nav-bg: rgba(17, 17, 22, 0.88);
 
   /* Typography */
   --font-sans: var(--font-body);
@@ -27,23 +30,27 @@
 }
 
 /* ============================================
-   LIGHT THEME OVERRIDES
+   LIGHT THEME
    ============================================ */
 
 html.light {
-  --color-loop-bg: #f8f9fc;
-  --color-loop-surface: #ffffff;
-  --color-loop-surface-2: #f0f1f5;
-  --color-loop-border: #d4d6e0;
-  --color-loop-text: #0f172a;
-  --color-loop-muted: #475569;
-  --color-loop-primary: #4f46e5;
-  --color-loop-primary-hover: #6366f1;
-  --color-loop-nav-bg: rgba(248, 249, 252, 0.85);
+  --color-loop-bg: #FAFBFD;
+  --color-loop-surface: #FFFFFF;
+  --color-loop-surface-2: #F3F4F8;
+  --color-loop-border: #E2E4EA;
+  --color-loop-text: #1A1D2B;
+  --color-loop-muted: #6B7084;
+  --color-loop-primary: #E8613F;
+  --color-loop-primary-hover: #D4502F;
+  --color-loop-accent: #2563EB;
+  --color-loop-nav-bg: rgba(250, 251, 253, 0.88);
+  --color-loop-green: #059669;
+  --color-loop-amber: #D97706;
+  --color-loop-red: #DC2626;
 }
 
 /* ============================================
-   BASE STYLES
+   BASE
    ============================================ */
 
 body {
@@ -55,7 +62,8 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-display), system-ui, sans-serif;
-  line-height: 1.2;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
 }
 
 code, pre, .font-mono {
@@ -63,7 +71,7 @@ code, pre, .font-mono {
 }
 
 /* ============================================
-   RANGE SLIDER
+   RANGE SLIDER — Coral themed
    ============================================ */
 
 input[type="range"] {
@@ -90,16 +98,16 @@ input[type="range"]::-webkit-slider-thumb {
   border-radius: 50%;
   background: var(--color-loop-primary);
   cursor: grab;
-  border: 2px solid var(--color-loop-bg);
-  box-shadow: 0 0 8px rgba(99, 102, 241, 0.4);
+  border: 3px solid var(--color-loop-surface);
+  box-shadow: 0 2px 8px rgba(249, 115, 84, 0.3);
   margin-top: -8px;
   transition: box-shadow 0.2s ease, transform 0.2s ease;
 }
 
 input[type="range"]::-webkit-slider-thumb:hover {
   background: var(--color-loop-primary-hover);
-  box-shadow: 0 0 16px rgba(99, 102, 241, 0.6);
-  transform: scale(1.1);
+  box-shadow: 0 2px 14px rgba(249, 115, 84, 0.45);
+  transform: scale(1.12);
 }
 
 input[type="range"]::-webkit-slider-thumb:active {
@@ -120,8 +128,8 @@ input[type="range"]::-moz-range-thumb {
   border-radius: 50%;
   background: var(--color-loop-primary);
   cursor: grab;
-  border: 2px solid var(--color-loop-bg);
-  box-shadow: 0 0 8px rgba(99, 102, 241, 0.4);
+  border: 3px solid var(--color-loop-surface);
+  box-shadow: 0 2px 8px rgba(249, 115, 84, 0.3);
 }
 
 input[type="range"]::-moz-range-thumb:hover {
@@ -139,32 +147,32 @@ input[type="range"]::-moz-range-progress {
    ============================================ */
 
 @keyframes fade-in-up {
-  from { opacity: 0; transform: translateY(12px); }
+  from { opacity: 0; transform: translateY(16px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
 .animate-fade-in-up {
-  animation: fade-in-up 0.4s ease-out both;
+  animation: fade-in-up 0.5s ease-out both;
 }
 
 @keyframes stagger-in {
-  from { opacity: 0; transform: translateY(8px); }
+  from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
 .animate-stagger > * {
   opacity: 0;
-  animation: stagger-in 0.3s ease-out forwards;
+  animation: stagger-in 0.35s ease-out forwards;
 }
 
 .animate-stagger > *:nth-child(1) { animation-delay: 0ms; }
-.animate-stagger > *:nth-child(2) { animation-delay: 60ms; }
-.animate-stagger > *:nth-child(3) { animation-delay: 120ms; }
-.animate-stagger > *:nth-child(4) { animation-delay: 180ms; }
-.animate-stagger > *:nth-child(5) { animation-delay: 240ms; }
-.animate-stagger > *:nth-child(6) { animation-delay: 300ms; }
-.animate-stagger > *:nth-child(7) { animation-delay: 360ms; }
-.animate-stagger > *:nth-child(8) { animation-delay: 420ms; }
+.animate-stagger > *:nth-child(2) { animation-delay: 70ms; }
+.animate-stagger > *:nth-child(3) { animation-delay: 140ms; }
+.animate-stagger > *:nth-child(4) { animation-delay: 210ms; }
+.animate-stagger > *:nth-child(5) { animation-delay: 280ms; }
+.animate-stagger > *:nth-child(6) { animation-delay: 350ms; }
+.animate-stagger > *:nth-child(7) { animation-delay: 420ms; }
+.animate-stagger > *:nth-child(8) { animation-delay: 490ms; }
 
 @keyframes expand-in {
   from { opacity: 0; max-height: 0; }
@@ -176,8 +184,8 @@ input[type="range"]::-moz-range-progress {
 }
 
 @keyframes glow-pulse {
-  0%, 100% { box-shadow: 0 0 8px rgba(239, 68, 68, 0.2); }
-  50% { box-shadow: 0 0 16px rgba(239, 68, 68, 0.4); }
+  0%, 100% { box-shadow: 0 0 8px rgba(248, 113, 113, 0.2); }
+  50% { box-shadow: 0 0 18px rgba(248, 113, 113, 0.35); }
 }
 
 .glow-urgent {
@@ -195,8 +203,14 @@ input[type="range"]::-moz-range-progress {
 
 @keyframes pulse-badge {
   0% { transform: scale(1); }
-  50% { transform: scale(1.15); }
+  50% { transform: scale(1.12); }
   100% { transform: scale(1); }
+}
+
+/* Nav underline slide */
+@keyframes underline-in {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
 }
 
 /* ============================================
@@ -233,42 +247,50 @@ input[type="range"]::-moz-range-progress {
 }
 
 /* ============================================
-   CARDS
+   CARDS — Shadow-based, no borders
    ============================================ */
 
 .loop-card {
   background: var(--color-loop-surface);
-  border: 1px solid var(--color-loop-border);
-  border-radius: 12px;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.05);
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
 }
 
 .loop-card:hover {
-  border-color: var(--color-loop-primary);
-  box-shadow: 0 0 20px rgba(99, 102, 241, 0.1);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+  transform: translateY(-1px);
 }
 
+html.light .loop-card {
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.03);
+}
+
+html.light .loop-card:hover {
+  box-shadow: 0 10px 35px rgba(0,0,0,0.08);
+}
+
+/* Interactive card — more lift */
 .loop-card-interactive {
   background: var(--color-loop-surface);
-  border: 1px solid var(--color-loop-border);
-  border-radius: 12px;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.05);
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
   cursor: pointer;
 }
 
 .loop-card-interactive:hover {
-  border-color: var(--color-loop-primary);
-  box-shadow: 0 0 24px rgba(99, 102, 241, 0.15);
-  transform: translateY(-2px);
+  box-shadow: 0 12px 35px rgba(0,0,0,0.12);
+  transform: translateY(-3px);
 }
 
 .loop-card-interactive:active {
-  transform: translateY(0);
-  box-shadow: 0 0 12px rgba(99, 102, 241, 0.1);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
 }
 
 /* ============================================
-   BUTTONS
+   BUTTONS — Coral primary, shadow hover
    ============================================ */
 
 .loop-btn {
@@ -276,8 +298,39 @@ input[type="range"]::-moz-range-progress {
   cursor: pointer;
 }
 
+.loop-btn:hover {
+  box-shadow: 0 4px 14px rgba(249, 115, 84, 0.25);
+}
+
 .loop-btn:active {
-  transform: scale(0.97);
+  transform: scale(0.98);
+}
+
+/* ============================================
+   BENTO GRID
+   ============================================ */
+
+.bento-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.bento-grid > .span-2 {
+  grid-column: span 2;
+}
+
+.bento-grid > .span-row-2 {
+  grid-row: span 2;
+}
+
+@media (max-width: 768px) {
+  .bento-grid {
+    grid-template-columns: 1fr;
+  }
+  .bento-grid > .span-2 {
+    grid-column: span 1;
+  }
 }
 
 /* ============================================
@@ -307,19 +360,19 @@ input[type="range"]::-moz-range-progress {
   bottom: 100%;
   left: 50%;
   transform: translateX(-50%) translateY(4px);
-  padding: 4px 8px;
-  border-radius: 6px;
+  padding: 4px 10px;
+  border-radius: 8px;
   background: var(--color-loop-surface-2);
-  border: 1px solid var(--color-loop-border);
   color: var(--color-loop-text);
   font-size: 11px;
   white-space: nowrap;
   pointer-events: none;
   opacity: 0;
   transition: opacity 0.15s ease, transform 0.15s ease;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
 .tooltip-trigger:hover::after {
   opacity: 1;
-  transform: translateX(-50%) translateY(-4px);
+  transform: translateX(-50%) translateY(-6px);
 }

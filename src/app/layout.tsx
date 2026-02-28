@@ -1,16 +1,16 @@
 import type { Metadata } from "next";
-import { Sora, Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
+import { Outfit, DM_Sans, JetBrains_Mono } from "next/font/google";
 import NavWrapper from "@/components/nav-wrapper";
 import ThemeProvider from "@/components/theme-provider";
 import "./globals.css";
 
-const sora = Sora({
+const outfit = Outfit({
   variable: "--font-display",
   subsets: ["latin"],
   weight: ["400", "600", "700", "800"],
 });
 
-const jakarta = Plus_Jakarta_Sans({
+const dmSans = DM_Sans({
   variable: "--font-body",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
@@ -36,7 +36,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
       <body
-        className={`${sora.variable} ${jakarta.variable} ${jetbrains.variable} antialiased min-h-screen`}
+        className={`${outfit.variable} ${dmSans.variable} ${jetbrains.variable} antialiased min-h-screen`}
       >
         <ThemeProvider>
           <NavWrapper />

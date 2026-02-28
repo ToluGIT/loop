@@ -154,7 +154,7 @@ export default function PeersPage() {
           )}
 
           <div className="sm:ml-auto">
-            <button className="px-4 py-2 rounded-lg bg-[var(--color-loop-primary)] hover:bg-[var(--color-loop-primary-hover)] text-white text-sm font-medium transition-colors">
+            <button className="loop-btn px-4 py-2 rounded-lg bg-[var(--color-loop-primary)] hover:bg-[var(--color-loop-primary-hover)] text-white text-sm font-medium transition-colors cursor-pointer">
               + Add Your Skills
             </button>
           </div>
