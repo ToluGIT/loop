@@ -255,12 +255,18 @@ export default function DashboardPage() {
               : "No grades yet"}
           </p>
           {(result.level5Average !== null || result.level6Average !== null) && (
-            <div className="flex items-center gap-3 mt-3 pt-3 border-t border-[var(--color-loop-border)] text-sm">
+            <div className="flex items-center gap-4 mt-3 pt-3 border-t border-[var(--color-loop-border)] text-sm">
               {result.level5Average !== null && (
-                <span className="text-[var(--color-loop-accent)]">L5: {result.level5Average}%</span>
+                <div className="text-center">
+                  <span className="font-semibold text-[var(--color-loop-accent)]">{result.level5Average}%</span>
+                  <span className="text-xs text-[var(--color-loop-muted)] ml-1">3rd yr (⅓)</span>
+                </div>
               )}
               {result.level6Average !== null && (
-                <span className="text-[var(--color-loop-primary)]">L6: {result.level6Average}%</span>
+                <div className="text-center">
+                  <span className="font-semibold text-[var(--color-loop-primary)]">{result.level6Average}%</span>
+                  <span className="text-xs text-[var(--color-loop-muted)] ml-1">4th yr (⅔)</span>
+                </div>
               )}
             </div>
           )}
@@ -397,7 +403,10 @@ export default function DashboardPage() {
       {/* Highest Impact Assessments */}
       {topLeverage.length > 0 && (
         <div className="mb-8">
-          <h2 className="text-xl font-semibold mb-4">Highest Impact Assessments</h2>
+          <h2 className="text-xl font-semibold mb-1">Where to Focus Next</h2>
+          <p className="text-sm text-[var(--color-loop-muted)] mb-4">
+            These upcoming assessments have the most power to move your overall grade. Higher influence = bigger effect on your classification.
+          </p>
           <div className="loop-card overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
@@ -406,8 +415,8 @@ export default function DashboardPage() {
                     <th className="text-left py-3 px-4 font-medium">#</th>
                     <th className="text-left py-3 px-4 font-medium">Assessment</th>
                     <th className="text-left py-3 px-4 font-medium">Module</th>
-                    <th className="text-right py-3 px-4 font-medium">Impact</th>
-                    <th className="text-right py-3 px-4 font-medium">Boundary</th>
+                    <th className="text-right py-3 px-4 font-medium">Influence</th>
+                    <th className="text-right py-3 px-4 font-medium">Grade Risk</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -429,15 +438,15 @@ export default function DashboardPage() {
                         <span className="font-mono font-semibold text-[var(--color-loop-primary)]">
                           {(item.leverage * 100).toFixed(1)}%
                         </span>
-                        <span className="text-xs text-[var(--color-loop-muted)] ml-1">per 1%</span>
+                        <span className="text-xs text-[var(--color-loop-muted)] ml-1">per mark</span>
                       </td>
                       <td className="py-3 px-4 text-right">
                         {item.crossesBoundary ? (
                           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-red-500/10 text-red-400 border border-red-500/30">
-                            Near boundary
+                            Could change class
                           </span>
                         ) : (
-                          <span className="text-xs text-[var(--color-loop-muted)]">—</span>
+                          <span className="text-xs text-[var(--color-loop-muted)]">Safe</span>
                         )}
                       </td>
                     </tr>
