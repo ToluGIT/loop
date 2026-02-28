@@ -118,18 +118,20 @@ export function calculateClassification(
     let totalWeightedScore = 0;
     let totalCredits = 0;
     let completedCredits = 0;
+    let gradedModuleCredits = 0;
 
     for (const mod of levelModules) {
       const result = calculateModuleAverage(mod);
       totalCredits += mod.credits;
       if (result) {
         totalWeightedScore += result.average * mod.credits;
+        gradedModuleCredits += mod.credits;
         completedCredits += mod.credits * result.completionRatio;
       }
     }
 
     return {
-      average: completedCredits > 0 ? totalWeightedScore / completedCredits : null,
+      average: gradedModuleCredits > 0 ? totalWeightedScore / gradedModuleCredits : null,
       totalCredits,
       completedCredits,
     };
