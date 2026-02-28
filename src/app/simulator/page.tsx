@@ -9,7 +9,7 @@ import {
 } from "@/lib/classification";
 import type { Classification } from "@/types";
 import UserSwitcher from "@/components/user-switcher";
-import { Sparkles, TrendingUp, AlertTriangle, RotateCcw } from "lucide-react";
+import { Sparkles, TrendingUp, AlertTriangle, RotateCcw, Calendar } from "lucide-react";
 
 // ============================================================
 // Types
@@ -19,6 +19,7 @@ interface AssessmentData {
   id: string;
   name: string;
   weight: number;
+  dueDate: string | null;
   grade: { score: number } | null;
 }
 
@@ -184,47 +185,63 @@ function ModuleCard({
         {mod.assessments.map((assessment) => {
           const hasGrade = assessment.grade !== null;
           const sliderVal = sliderValues[assessment.id];
+          const deadlineInfo = getDeadlineInfo(assessment.dueDate);
 
           return (
-            <div key={assessment.id} className="flex items-center gap-3">
-              {/* Weight badge */}
-              <span className="text-xs text-[var(--color-loop-muted)] font-mono w-10 shrink-0">
-                {(assessment.weight * 100).toFixed(0)}%
-              </span>
-
-              {/* Assessment name */}
-              <span className="text-sm text-[var(--color-loop-text)] flex-1 min-w-0 truncate">
-                {assessment.name}
-              </span>
-
-              {/* Grade display or slider */}
-              {hasGrade ? (
-                <span className="shrink-0 px-3 py-1 rounded-full text-sm font-mono font-semibold bg-[var(--color-loop-primary)]/20 text-[var(--color-loop-primary-hover)] border border-[var(--color-loop-primary)]/30">
-                  {assessment.grade!.score}
+            <div key={assessment.id} className="space-y-1">
+              <div className="flex items-center gap-3">
+                {/* Weight badge */}
+                <span className="text-xs text-[var(--color-loop-muted)] font-mono w-10 shrink-0">
+                  {(assessment.weight * 100).toFixed(0)}%
                 </span>
-              ) : (
-                <div className="flex items-center gap-2 shrink-0 w-44 sm:w-52">
-                  <div className="relative flex-1 h-8 flex items-center">
-                    <input
-                      type="range"
-                      min={0}
-                      max={100}
-                      step={1}
-                      value={sliderVal ?? 50}
-                      onChange={(e) =>
-                        onSliderChange(assessment.id, Number(e.target.value))
-                      }
-                      className="w-full relative z-10"
-                      style={{
-                        background: `linear-gradient(to right, var(--color-loop-primary) 0%, var(--color-loop-primary) ${sliderVal ?? 50}%, var(--color-loop-surface-2) ${sliderVal ?? 50}%, var(--color-loop-surface-2) 100%)`,
-                      }}
-                    />
-                  </div>
-                  <span className="text-sm font-mono font-bold text-[var(--color-loop-primary-hover)] w-10 text-right tabular-nums">
-                    {sliderVal ?? 50}
+
+                {/* Assessment name + deadline */}
+                <div className="flex-1 min-w-0">
+                  <span className="text-sm text-[var(--color-loop-text)] truncate block">
+                    {assessment.name}
                   </span>
+                  {deadlineInfo && !hasGrade && (
+                    <span className={`inline-flex items-center gap-1 text-xs mt-0.5 ${deadlineInfo.color}`}>
+                      <Calendar size={10} />
+                      {deadlineInfo.text}
+                      {deadlineInfo.urgent && (
+                        <span className="ml-1 px-1.5 py-0 rounded-full text-[10px] font-bold bg-red-500/20 text-red-400 border border-red-500/30">
+                          SOON
+                        </span>
+                      )}
+                    </span>
+                  )}
                 </div>
-              )}
+
+                {/* Grade display or slider */}
+                {hasGrade ? (
+                  <span className="shrink-0 px-3 py-1 rounded-full text-sm font-mono font-semibold bg-[var(--color-loop-primary)]/20 text-[var(--color-loop-primary-hover)] border border-[var(--color-loop-primary)]/30">
+                    {assessment.grade!.score}
+                  </span>
+                ) : (
+                  <div className="flex items-center gap-2 shrink-0 w-44 sm:w-52">
+                    <div className="relative flex-1 h-8 flex items-center">
+                      <input
+                        type="range"
+                        min={0}
+                        max={100}
+                        step={1}
+                        value={sliderVal ?? 50}
+                        onChange={(e) =>
+                          onSliderChange(assessment.id, Number(e.target.value))
+                        }
+                        className="w-full relative z-10"
+                        style={{
+                          background: `linear-gradient(to right, var(--color-loop-primary) 0%, var(--color-loop-primary) ${sliderVal ?? 50}%, var(--color-loop-surface-2) ${sliderVal ?? 50}%, var(--color-loop-surface-2) 100%)`,
+                        }}
+                      />
+                    </div>
+                    <span className="text-sm font-mono font-bold text-[var(--color-loop-primary-hover)] w-10 text-right tabular-nums">
+                      {sliderVal ?? 50}
+                    </span>
+                  </div>
+                )}
+              </div>
             </div>
           );
         })}
@@ -234,8 +251,20 @@ function ModuleCard({
 }
 
 // ============================================================
-// Helper
+// Helpers
 // ============================================================
+
+function getDeadlineInfo(dueDate: string | null): { text: string; color: string; urgent: boolean } | null {
+  if (!dueDate) return null;
+  const now = new Date();
+  const due = new Date(dueDate);
+  const diffDays = Math.ceil((due.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+  if (diffDays < 0) return null; // past
+  const dateStr = due.toLocaleDateString("en-GB", { day: "numeric", month: "short" });
+  if (diffDays <= 7) return { text: `Due ${dateStr} (${diffDays}d)`, color: "text-red-400", urgent: true };
+  if (diffDays <= 21) return { text: `Due ${dateStr} (${diffDays}d)`, color: "text-amber-400", urgent: false };
+  return { text: `Due ${dateStr}`, color: "text-[var(--color-loop-muted)]", urgent: false };
+}
 
 function getClassFromAvg(avg: number): Classification {
   if (avg >= 70) return "First";
@@ -535,28 +564,28 @@ export default function SimulatorPage() {
           <div className="flex flex-wrap items-center justify-center gap-2">
             <button
               onClick={() => applyPreset(100)}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[var(--color-loop-surface)] border border-[var(--color-loop-border)] hover:border-[var(--color-loop-green)] hover:bg-[var(--color-loop-green)]/10 text-sm text-[var(--color-loop-text)] transition-colors"
+              className="loop-btn flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[var(--color-loop-surface)] border border-[var(--color-loop-border)] hover:border-[var(--color-loop-green)] hover:bg-[var(--color-loop-green)]/10 hover:shadow-[0_0_16px_rgba(34,197,94,0.15)] text-sm text-[var(--color-loop-text)] transition-all"
             >
               <Sparkles size={14} className="text-[var(--color-loop-green)]" />
               Ace Everything
             </button>
             <button
               onClick={() => applyPreset(75)}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[var(--color-loop-surface)] border border-[var(--color-loop-border)] hover:border-blue-400 hover:bg-blue-400/10 text-sm text-[var(--color-loop-text)] transition-colors"
+              className="loop-btn flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[var(--color-loop-surface)] border border-[var(--color-loop-border)] hover:border-blue-400 hover:bg-blue-400/10 hover:shadow-[0_0_16px_rgba(96,165,250,0.15)] text-sm text-[var(--color-loop-text)] transition-all"
             >
               <TrendingUp size={14} className="text-blue-400" />
               Strong Pass
             </button>
             <button
               onClick={() => applyPreset(42)}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[var(--color-loop-surface)] border border-[var(--color-loop-border)] hover:border-[var(--color-loop-amber)] hover:bg-[var(--color-loop-amber)]/10 text-sm text-[var(--color-loop-text)] transition-colors"
+              className="loop-btn flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[var(--color-loop-surface)] border border-[var(--color-loop-border)] hover:border-[var(--color-loop-amber)] hover:bg-[var(--color-loop-amber)]/10 hover:shadow-[0_0_16px_rgba(249,115,22,0.15)] text-sm text-[var(--color-loop-text)] transition-all"
             >
               <AlertTriangle size={14} className="text-[var(--color-loop-amber)]" />
               Barely Pass
             </button>
             <button
               onClick={() => applyPreset(50)}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[var(--color-loop-surface)] border border-[var(--color-loop-border)] hover:border-[var(--color-loop-muted)] hover:bg-[var(--color-loop-surface-2)] text-sm text-[var(--color-loop-muted)] transition-colors"
+              className="loop-btn flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[var(--color-loop-surface)] border border-[var(--color-loop-border)] hover:border-[var(--color-loop-muted)] hover:bg-[var(--color-loop-surface-2)] text-sm text-[var(--color-loop-muted)] transition-all"
             >
               <RotateCcw size={14} />
               Reset

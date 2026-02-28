@@ -54,6 +54,7 @@ export async function GET(
         id: a.id,
         name: a.name,
         weight: a.weight,
+        dueDate: a.dueDate ? a.dueDate.toISOString() : null,
         grade: a.grades.length > 0 ? { score: a.grades[0].score } : null,
       })),
     }));

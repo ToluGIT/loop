@@ -136,10 +136,112 @@ input[type="range"]::-moz-range-progress {
   background: var(--color-loop-surface);
   border: 1px solid var(--color-loop-border);
   border-radius: 12px;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
 }
 
 .loop-card:hover {
   border-color: var(--color-loop-primary);
   box-shadow: 0 0 20px rgba(99, 102, 241, 0.1);
+}
+
+/* Interactive card — lifts on hover */
+.loop-card-interactive {
+  background: var(--color-loop-surface);
+  border: 1px solid var(--color-loop-border);
+  border-radius: 12px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+  cursor: pointer;
+}
+
+.loop-card-interactive:hover {
+  border-color: var(--color-loop-primary);
+  box-shadow: 0 0 24px rgba(99, 102, 241, 0.15);
+  transform: translateY(-2px);
+}
+
+.loop-card-interactive:active {
+  transform: translateY(0);
+  box-shadow: 0 0 12px rgba(99, 102, 241, 0.1);
+}
+
+/* Button press effect */
+.loop-btn {
+  transition: all 0.15s ease;
+}
+
+.loop-btn:active {
+  transform: scale(0.97);
+}
+
+/* Staggered fade-in for lists */
+@keyframes stagger-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-stagger > * {
+  opacity: 0;
+  animation: stagger-in 0.3s ease-out forwards;
+}
+
+.animate-stagger > *:nth-child(1) { animation-delay: 0ms; }
+.animate-stagger > *:nth-child(2) { animation-delay: 60ms; }
+.animate-stagger > *:nth-child(3) { animation-delay: 120ms; }
+.animate-stagger > *:nth-child(4) { animation-delay: 180ms; }
+.animate-stagger > *:nth-child(5) { animation-delay: 240ms; }
+.animate-stagger > *:nth-child(6) { animation-delay: 300ms; }
+.animate-stagger > *:nth-child(7) { animation-delay: 360ms; }
+.animate-stagger > *:nth-child(8) { animation-delay: 420ms; }
+
+/* Smooth expand/collapse */
+.expand-enter {
+  animation: expand-in 0.25s ease-out;
+}
+
+@keyframes expand-in {
+  from { opacity: 0; max-height: 0; }
+  to { opacity: 1; max-height: 500px; }
+}
+
+/* Glow pulse for urgent items */
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 8px rgba(239, 68, 68, 0.2); }
+  50% { box-shadow: 0 0 16px rgba(239, 68, 68, 0.4); }
+}
+
+.glow-urgent {
+  animation: glow-pulse 2s ease-in-out infinite;
+}
+
+/* Number count-up feel via tabular-nums */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Tooltip hover effect */
+.tooltip-trigger {
+  position: relative;
+}
+
+.tooltip-trigger::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: var(--color-loop-surface-2);
+  border: 1px solid var(--color-loop-border);
+  color: var(--color-loop-text);
+  font-size: 11px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.tooltip-trigger:hover::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-4px);
 }

@@ -34,13 +34,13 @@ export default function Home() {
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link
             href="/dashboard"
-            className="px-8 py-4 rounded-xl bg-[var(--color-loop-primary)] hover:bg-[var(--color-loop-primary-hover)] text-white font-semibold text-lg transition-colors"
+            className="loop-btn px-8 py-4 rounded-xl bg-[var(--color-loop-primary)] hover:bg-[var(--color-loop-primary-hover)] hover:shadow-[0_0_30px_rgba(99,102,241,0.3)] text-white font-semibold text-lg transition-all"
           >
             Launch Dashboard
           </Link>
           <Link
             href="/simulator"
-            className="px-8 py-4 rounded-xl border border-[var(--color-loop-border)] hover:border-[var(--color-loop-primary)] text-[var(--color-loop-text)] font-semibold text-lg transition-colors"
+            className="loop-btn px-8 py-4 rounded-xl border border-[var(--color-loop-border)] hover:border-[var(--color-loop-primary)] hover:shadow-[0_0_20px_rgba(99,102,241,0.15)] text-[var(--color-loop-text)] font-semibold text-lg transition-all"
           >
             Try the Simulator
           </Link>
@@ -48,7 +48,7 @@ export default function Home() {
       </div>
 
       {/* Feature Cards */}
-      <div className="mt-20 grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-4xl mx-auto w-full px-4">
+      <div className="mt-20 grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-4xl mx-auto w-full px-4 animate-stagger">
         <FeatureCard
           icon={<BarChart3 className="w-5 h-5 text-[var(--color-loop-primary)]" />}
           title="Grade Projection"
@@ -90,8 +90,8 @@ function FeatureCard({
   description: string;
 }) {
   return (
-    <div className="loop-card p-6">
-      <div className="w-10 h-10 rounded-lg bg-[var(--color-loop-primary)]/10 flex items-center justify-center mb-3">
+    <div className="loop-card-interactive p-6 group">
+      <div className="w-10 h-10 rounded-lg bg-[var(--color-loop-primary)]/10 flex items-center justify-center mb-3 group-hover:bg-[var(--color-loop-primary)]/20 transition-colors">
         {icon}
       </div>
       <h3 className="text-lg font-semibold mb-2">{title}</h3>

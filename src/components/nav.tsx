@@ -42,9 +42,9 @@ export default function Nav() {
               <Link
                 key={href}
                 href={href}
-                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                className={`relative px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                   active
-                    ? "bg-[var(--color-loop-primary)] text-white"
+                    ? "bg-[var(--color-loop-primary)] text-white shadow-[0_0_12px_rgba(99,102,241,0.3)]"
                     : "text-[var(--color-loop-muted)] hover:text-[var(--color-loop-text)] hover:bg-[var(--color-loop-surface-2)]"
                 }`}
               >

@@ -33,10 +33,11 @@ model Module {
 }
 
 model Assessment {
-  id       String @id @default(cuid())
+  id       String    @id @default(cuid())
   name     String
   weight   Float
   moduleId String
+  dueDate  DateTime?
 
   module Module  @relation(fields: [moduleId], references: [id], onDelete: Cascade)
   grades Grade[]

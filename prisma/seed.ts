@@ -37,6 +37,7 @@ async function main() {
             create: moduleTemplate.assessments.map((a) => ({
               name: a.name,
               weight: a.weight,
+              dueDate: a.dueDate ? new Date(a.dueDate) : null,
             })),
           },
         },

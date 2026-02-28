@@ -43,7 +43,7 @@ export default function CampusPage() {
         </div>
 
         {/* Headline stats */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8 animate-stagger">
           <div className="loop-card p-6 text-center">
             <div className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[var(--color-loop-primary)] to-[var(--color-loop-primary-hover)]">
               {CAMPUS_STATS.totalStudents}
@@ -178,7 +178,7 @@ export default function CampusPage() {
                 {sortedModules.map((mod) => (
                   <tr
                     key={mod.code}
-                    className="border-b border-[var(--color-loop-border)] last:border-0 hover:bg-[var(--color-loop-surface-2)] transition-colors"
+                    className="border-b border-[var(--color-loop-border)] last:border-0 hover:bg-[var(--color-loop-surface-2)] transition-all cursor-default"
                   >
                     <td className="py-3 pr-4 font-mono text-[var(--color-loop-muted)]">
                       {mod.code}

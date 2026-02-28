@@ -12,8 +12,8 @@ export const RGU_MODULES = [
     credits: 15,
     level: 5,
     assessments: [
-      { name: "Coursework 1 - Web App", weight: 0.5 },
-      { name: "Coursework 2 - Group Project", weight: 0.5 },
+      { name: "Coursework 1 - Web App", weight: 0.5, dueDate: "2025-11-15" },
+      { name: "Coursework 2 - Group Project", weight: 0.5, dueDate: "2026-01-24" },
     ],
   },
   {
@@ -22,8 +22,8 @@ export const RGU_MODULES = [
     credits: 15,
     level: 5,
     assessments: [
-      { name: "Coursework - Schema Design", weight: 0.4 },
-      { name: "Final Exam", weight: 0.6 },
+      { name: "Coursework - Schema Design", weight: 0.4, dueDate: "2025-12-06" },
+      { name: "Final Exam", weight: 0.6, dueDate: "2026-04-22" },
     ],
   },
   {
@@ -32,8 +32,8 @@ export const RGU_MODULES = [
     credits: 15,
     level: 5,
     assessments: [
-      { name: "UX Portfolio", weight: 0.6 },
-      { name: "Exam", weight: 0.4 },
+      { name: "UX Portfolio", weight: 0.6, dueDate: "2026-01-17" },
+      { name: "Exam", weight: 0.4, dueDate: "2026-04-28" },
     ],
   },
   {
@@ -42,8 +42,8 @@ export const RGU_MODULES = [
     credits: 15,
     level: 6,
     assessments: [
-      { name: "Coursework - Penetration Testing Report", weight: 0.5 },
-      { name: "Final Exam", weight: 0.5 },
+      { name: "Coursework - Penetration Testing Report", weight: 0.5, dueDate: "2026-02-14" },
+      { name: "Final Exam", weight: 0.5, dueDate: "2026-05-06" },
     ],
   },
   {
@@ -52,8 +52,8 @@ export const RGU_MODULES = [
     credits: 15,
     level: 6,
     assessments: [
-      { name: "Coursework - Cloud Architecture", weight: 0.6 },
-      { name: "Final Exam", weight: 0.4 },
+      { name: "Coursework - Cloud Architecture", weight: 0.6, dueDate: "2026-02-20" },
+      { name: "Final Exam", weight: 0.4, dueDate: "2026-05-12" },
     ],
   },
   {
@@ -62,8 +62,8 @@ export const RGU_MODULES = [
     credits: 15,
     level: 6,
     assessments: [
-      { name: "Coursework - ML Project", weight: 0.5 },
-      { name: "Final Exam", weight: 0.5 },
+      { name: "Coursework - ML Project", weight: 0.5, dueDate: "2026-03-13" },
+      { name: "Final Exam", weight: 0.5, dueDate: "2026-05-19" },
     ],
   },
   {
@@ -72,9 +72,9 @@ export const RGU_MODULES = [
     credits: 15,
     level: 6,
     assessments: [
-      { name: "Literature Review", weight: 0.3 },
-      { name: "Research Proposal", weight: 0.4 },
-      { name: "Statistical Analysis", weight: 0.3 },
+      { name: "Literature Review", weight: 0.3, dueDate: "2025-11-29" },
+      { name: "Research Proposal", weight: 0.4, dueDate: "2026-03-06" },
+      { name: "Statistical Analysis", weight: 0.3, dueDate: "2026-04-10" },
     ],
   },
   {
@@ -83,9 +83,9 @@ export const RGU_MODULES = [
     credits: 30,
     level: 6,
     assessments: [
-      { name: "Dissertation", weight: 0.7 },
-      { name: "Presentation", weight: 0.15 },
-      { name: "Viva", weight: 0.15 },
+      { name: "Dissertation", weight: 0.7, dueDate: "2026-04-17" },
+      { name: "Presentation", weight: 0.15, dueDate: "2026-05-01" },
+      { name: "Viva", weight: 0.15, dueDate: "2026-05-08" },
     ],
   },
 ];

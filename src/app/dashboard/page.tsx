@@ -1,4 +1,7 @@
-import { prisma } from "@/lib/db";
+"use client";
+
+import { useEffect, useState, useMemo, useCallback } from "react";
+import { Clock, ChevronDown, ChevronRight, Calendar } from "lucide-react";
 import {
   calculateClassification,
   calculateModuleAverage,
@@ -8,22 +11,189 @@ import {
 import { generateInsights } from "@/lib/insights";
 import { analyzeRisk } from "@/lib/risk-analysis";
 import { calculateLeverage } from "@/lib/leverage";
+import UserSwitcher from "@/components/user-switcher";
 
-export default async function DashboardPage() {
-  // Fetch the first user with all nested data
-  const user = await prisma.user.findFirst({
-    include: {
-      modules: {
-        include: {
-          assessments: {
-            include: {
-              grades: true,
-            },
-          },
-        },
-      },
-    },
+interface UserData {
+  id: string;
+  name: string;
+  email: string;
+  course: string;
+  year: number;
+}
+
+interface AssessmentData {
+  id: string;
+  name: string;
+  weight: number;
+  dueDate: string | null;
+  grade: { score: number } | null;
+}
+
+interface ModuleData {
+  id: string;
+  code: string;
+  name: string;
+  credits: number;
+  level: number;
+  assessments: AssessmentData[];
+}
+
+function getDeadlineStatus(dueDate: string | null): {
+  label: string;
+  color: string;
+  urgent: boolean;
+} {
+  if (!dueDate) return { label: "", color: "", urgent: false };
+  const now = new Date();
+  const due = new Date(dueDate);
+  const diffMs = due.getTime() - now.getTime();
+  const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+
+  if (diffDays < 0)
+    return { label: `${Math.abs(diffDays)}d ago`, color: "text-[var(--color-loop-muted)]", urgent: false };
+  if (diffDays <= 7)
+    return { label: `${diffDays}d left`, color: "text-red-400", urgent: true };
+  if (diffDays <= 21)
+    return { label: `${diffDays}d left`, color: "text-amber-400", urgent: false };
+  return { label: `${diffDays}d left`, color: "text-[var(--color-loop-muted)]", urgent: false };
+}
+
+function formatDate(dueDate: string | null): string {
+  if (!dueDate) return "";
+  return new Date(dueDate).toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
   });
+}
+
+export default function DashboardPage() {
+  const [userId, setUserId] = useState("first");
+  const [user, setUser] = useState<UserData | null>(null);
+  const [modules, setModules] = useState<ModuleData[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [expandedModules, setExpandedModules] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    setLoading(true);
+    fetch(`/api/simulator/${userId}`)
+      .then((r) => r.json())
+      .then((data) => {
+        setUser(data.user);
+        setModules(data.modules);
+        setExpandedModules(new Set());
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, [userId]);
+
+  const handleUserSwitch = useCallback((id: string) => setUserId(id), []);
+
+  const toggleModule = useCallback((modId: string) => {
+    setExpandedModules((prev) => {
+      const next = new Set(prev);
+      if (next.has(modId)) next.delete(modId);
+      else next.add(modId);
+      return next;
+    });
+  }, []);
+
+  // Calculations
+  const modulesForCalc = useMemo(
+    () =>
+      modules.map((mod) => ({
+        ...mod,
+        assessments: mod.assessments.map((a) => ({
+          id: a.id,
+          name: a.name,
+          weight: a.weight,
+          grade: a.grade,
+        })),
+      })),
+    [modules]
+  );
+
+  const result = useMemo(
+    () => calculateClassification(modulesForCalc),
+    [modulesForCalc]
+  );
+  const classColor = getClassificationColor(result.classification);
+  const classShort = getClassificationShort(result.classification);
+
+  const moduleStats = useMemo(
+    () =>
+      modules.map((mod) => {
+        const avg = calculateModuleAverage(mod);
+        return {
+          ...mod,
+          average: avg?.average ?? null,
+          completionRatio: avg?.completionRatio ?? 0,
+          gradedCount: mod.assessments.filter((a) => a.grade?.score != null).length,
+          totalCount: mod.assessments.length,
+        };
+      }),
+    [modules]
+  );
+
+  const insights = useMemo(
+    () => generateInsights(modulesForCalc, result),
+    [modulesForCalc, result]
+  );
+  const risk = useMemo(
+    () => analyzeRisk(modulesForCalc, result.classification, result.weightedAverage),
+    [modulesForCalc, result]
+  );
+  const topLeverage = useMemo(
+    () => calculateLeverage(modulesForCalc).slice(0, 5),
+    [modulesForCalc]
+  );
+
+  // Upcoming deadlines (ungraded assessments with due dates, sorted by date)
+  const upcomingDeadlines = useMemo(() => {
+    const now = new Date();
+    const items: { assessment: AssessmentData; moduleCode: string; moduleName: string }[] = [];
+    for (const mod of modules) {
+      for (const a of mod.assessments) {
+        if (!a.grade && a.dueDate && new Date(a.dueDate) > now) {
+          items.push({ assessment: a, moduleCode: mod.code, moduleName: mod.name });
+        }
+      }
+    }
+    return items.sort(
+      (a, b) =>
+        new Date(a.assessment.dueDate!).getTime() -
+        new Date(b.assessment.dueDate!).getTime()
+    );
+  }, [modules]);
+
+  const riskColors = {
+    safe: { border: "border-emerald-500/30", text: "text-emerald-400", label: "Secure" },
+    watch: { border: "border-amber-500/30", text: "text-amber-400", label: "Watch" },
+    danger: { border: "border-red-500/30", text: "text-red-400", label: "At Risk" },
+  };
+  const riskStyle = riskColors[risk.riskLevel];
+
+  const insightTypeColors: Record<string, string> = {
+    success: "border-emerald-500/30 bg-emerald-500/5",
+    warning: "border-amber-500/30 bg-amber-500/5",
+    info: "border-blue-500/30 bg-blue-500/5",
+    action: "border-purple-500/30 bg-purple-500/5",
+  };
+
+  const insightIconColors: Record<string, string> = {
+    success: "text-emerald-400",
+    warning: "text-amber-400",
+    info: "text-blue-400",
+    action: "text-purple-400",
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-[var(--color-loop-primary)] border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   if (!user) {
     return (
@@ -38,81 +208,21 @@ export default async function DashboardPage() {
     );
   }
 
-  // Transform modules to the shape classification functions expect
-  // Each assessment needs a single grade (take the first one for this user)
-  const modulesForCalc = user.modules.map((mod) => ({
-    id: mod.id,
-    code: mod.code,
-    name: mod.name,
-    credits: mod.credits,
-    level: mod.level,
-    assessments: mod.assessments.map((a) => ({
-      id: a.id,
-      name: a.name,
-      weight: a.weight,
-      grade: a.grades.length > 0 ? { score: a.grades[0].score } : null,
-    })),
-  }));
-
-  const result = calculateClassification(modulesForCalc);
-  const classColor = getClassificationColor(result.classification);
-  const classShort = getClassificationShort(result.classification);
-
-  // Per-module stats
-  const moduleStats = modulesForCalc.map((mod) => {
-    const avg = calculateModuleAverage(mod);
-    const totalAssessments = mod.assessments.length;
-    const gradedAssessments = mod.assessments.filter(
-      (a) => a.grade?.score != null
-    ).length;
-    return {
-      ...mod,
-      average: avg?.average ?? null,
-      completionRatio: avg?.completionRatio ?? 0,
-      gradedCount: gradedAssessments,
-      totalCount: totalAssessments,
-    };
-  });
-
-  // Innovation features
-  const insights = generateInsights(modulesForCalc, result);
-  const risk = analyzeRisk(modulesForCalc, result.classification, result.weightedAverage);
-  const leverage = calculateLeverage(modulesForCalc);
-  const topLeverage = leverage.slice(0, 5);
-
-  const riskColors = {
-    safe: { bg: "bg-emerald-500/10", border: "border-emerald-500/30", text: "text-emerald-400", label: "Secure" },
-    watch: { bg: "bg-amber-500/10", border: "border-amber-500/30", text: "text-amber-400", label: "Watch" },
-    danger: { bg: "bg-red-500/10", border: "border-red-500/30", text: "text-red-400", label: "At Risk" },
-  };
-  const riskStyle = riskColors[risk.riskLevel];
-
-  const insightTypeColors = {
-    success: "border-emerald-500/30 bg-emerald-500/5",
-    warning: "border-amber-500/30 bg-amber-500/5",
-    info: "border-blue-500/30 bg-blue-500/5",
-    action: "border-purple-500/30 bg-purple-500/5",
-  };
-
-  const insightIconColors = {
-    success: "text-emerald-400",
-    warning: "text-amber-400",
-    info: "text-blue-400",
-    action: "text-purple-400",
-  };
-
   return (
     <div className="min-h-screen px-4 py-8 max-w-5xl mx-auto animate-fade-in-up">
       {/* Header */}
-      <header className="mb-8">
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">{user.name}</h1>
-        <p className="text-[var(--color-loop-muted)] mt-1">
-          {user.course} &middot; Year {user.year}
-        </p>
+      <header className="mb-8 flex items-start justify-between">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">{user.name}</h1>
+          <p className="text-[var(--color-loop-muted)] mt-1">
+            {user.course} &middot; Year {user.year}
+          </p>
+        </div>
+        <UserSwitcher currentUserId={user.id} onSwitch={handleUserSwitch} />
       </header>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8 animate-stagger">
         {/* Classification Badge */}
         <div className="loop-card p-6 flex flex-col items-center justify-center text-center">
           <p className="text-xs uppercase tracking-widest text-[var(--color-loop-muted)] mb-3">
@@ -190,6 +300,45 @@ export default async function DashboardPage() {
         </div>
       </div>
 
+      {/* Upcoming Deadlines */}
+      {upcomingDeadlines.length > 0 && (
+        <div className="mb-8">
+          <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+            <Clock size={18} className="text-[var(--color-loop-primary)]" />
+            Upcoming Deadlines
+          </h2>
+          <div className="flex gap-3 overflow-x-auto pb-2 animate-stagger">
+            {upcomingDeadlines.slice(0, 6).map((item) => {
+              const status = getDeadlineStatus(item.assessment.dueDate);
+              return (
+                <div
+                  key={item.assessment.id}
+                  className={`loop-card p-4 min-w-[200px] shrink-0 ${
+                    status.urgent ? "border border-red-500/30 glow-urgent" : ""
+                  }`}
+                >
+                  <p className="text-xs font-mono text-[var(--color-loop-muted)]">
+                    {item.moduleCode}
+                  </p>
+                  <p className="text-sm font-medium text-[var(--color-loop-text)] mt-1 line-clamp-1">
+                    {item.assessment.name}
+                  </p>
+                  <div className="flex items-center gap-1.5 mt-2">
+                    <Calendar size={12} className={status.color} />
+                    <span className={`text-xs font-medium ${status.color}`}>
+                      {formatDate(item.assessment.dueDate)}
+                    </span>
+                  </div>
+                  <p className={`text-xs font-bold mt-1 ${status.color}`}>
+                    {status.label}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       {/* Level Averages */}
       {(result.level5Average !== null || result.level6Average !== null) && (
         <div className="flex flex-wrap justify-center gap-4 mb-8">
@@ -199,9 +348,7 @@ export default async function DashboardPage() {
                 Level 5 Average
               </p>
               <p className="text-2xl font-bold text-blue-300">{result.level5Average}%</p>
-              <p className="text-xs text-[var(--color-loop-muted)]">
-                weighted 1/3
-              </p>
+              <p className="text-xs text-[var(--color-loop-muted)]">weighted 1/3</p>
             </div>
           )}
           {result.level6Average !== null && (
@@ -210,9 +357,7 @@ export default async function DashboardPage() {
                 Level 6 Average
               </p>
               <p className="text-2xl font-bold text-purple-300">{result.level6Average}%</p>
-              <p className="text-xs text-[var(--color-loop-muted)]">
-                weighted 2/3
-              </p>
+              <p className="text-xs text-[var(--color-loop-muted)]">weighted 2/3</p>
             </div>
           )}
         </div>
@@ -252,7 +397,7 @@ export default async function DashboardPage() {
         </div>
       )}
 
-      {/* Grade Leverage - Top Impact Assessments */}
+      {/* Highest Impact Assessments */}
       {topLeverage.length > 0 && (
         <div className="mb-8">
           <h2 className="text-lg font-semibold mb-4">Highest Impact Assessments</h2>
@@ -307,7 +452,7 @@ export default async function DashboardPage() {
         </div>
       )}
 
-      {/* Module Cards */}
+      {/* Module Cards - Expandable */}
       <h2 className="text-lg font-semibold mb-4">Modules</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {moduleStats.map((mod) => {
@@ -325,55 +470,126 @@ export default async function DashboardPage() {
           const barWidth =
             mod.average !== null ? Math.min(mod.average, 100) : 0;
 
+          const isExpanded = expandedModules.has(mod.id);
+
+          // Find nearest upcoming deadline for this module
+          const nextDeadline = mod.assessments
+            .filter((a) => !a.grade && a.dueDate && new Date(a.dueDate) > new Date())
+            .sort((a, b) => new Date(a.dueDate!).getTime() - new Date(b.dueDate!).getTime())[0];
+          const deadlineStatus = nextDeadline ? getDeadlineStatus(nextDeadline.dueDate) : null;
+
           return (
-            <div key={mod.id} className="loop-card p-5">
-              <div className="flex items-start justify-between mb-2">
-                <div>
-                  <span className="text-xs font-mono text-[var(--color-loop-muted)]">
-                    {mod.code}
-                  </span>
-                  <span className="mx-2 text-[var(--color-loop-border)]">
-                    |
+            <div key={mod.id} className="loop-card overflow-hidden">
+              {/* Clickable header */}
+              <button
+                onClick={() => toggleModule(mod.id)}
+                className="w-full p-5 text-left hover:bg-[var(--color-loop-surface-2)]/50 transition-colors"
+              >
+                <div className="flex items-start justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    {isExpanded ? (
+                      <ChevronDown size={14} className="text-[var(--color-loop-muted)]" />
+                    ) : (
+                      <ChevronRight size={14} className="text-[var(--color-loop-muted)]" />
+                    )}
+                    <span className="text-xs font-mono text-[var(--color-loop-muted)]">
+                      {mod.code}
+                    </span>
+                    <span className="text-[var(--color-loop-border)]">|</span>
+                    <span className="text-xs text-[var(--color-loop-muted)]">
+                      L{mod.level} &middot; {mod.credits} credits
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    {deadlineStatus && deadlineStatus.urgent && (
+                      <span className={`text-xs font-medium ${deadlineStatus.color} flex items-center gap-1`}>
+                        <Clock size={10} />
+                        {deadlineStatus.label}
+                      </span>
+                    )}
+                    <span className="text-xs text-[var(--color-loop-muted)]">
+                      {mod.gradedCount}/{mod.totalCount} graded
+                    </span>
+                  </div>
+                </div>
+                <h3 className="font-semibold text-base mb-3">{mod.name}</h3>
+
+                {/* Performance bar */}
+                <div className="w-full h-2 rounded-full bg-[var(--color-loop-surface-2)] overflow-hidden mb-2">
+                  <div
+                    className="h-full rounded-full transition-all"
+                    style={{ width: `${barWidth}%`, backgroundColor: barColor }}
+                  />
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <span className="text-lg font-bold" style={{ color: barColor }}>
+                    {mod.average !== null
+                      ? `${Math.round(mod.average * 10) / 10}%`
+                      : "No grades"}
                   </span>
                   <span className="text-xs text-[var(--color-loop-muted)]">
-                    L{mod.level} &middot; {mod.credits} credits
+                    {Math.round(mod.completionRatio * 100)}% complete
                   </span>
                 </div>
-                <span className="text-xs text-[var(--color-loop-muted)]">
-                  {mod.gradedCount}/{mod.totalCount} graded
-                </span>
-              </div>
-              <h3 className="font-semibold text-base mb-3">{mod.name}</h3>
+              </button>
 
-              {/* Performance bar */}
-              <div className="w-full h-2 rounded-full bg-[var(--color-loop-surface-2)] overflow-hidden mb-2">
-                <div
-                  className="h-full rounded-full transition-all"
-                  style={{
-                    width: `${barWidth}%`,
-                    backgroundColor: barColor,
-                  }}
-                />
-              </div>
-
-              <div className="flex items-center justify-between">
-                <span
-                  className="text-lg font-bold"
-                  style={{ color: barColor }}
-                >
-                  {mod.average !== null
-                    ? `${Math.round(mod.average * 10) / 10}%`
-                    : "No grades"}
-                </span>
-                <span className="text-xs text-[var(--color-loop-muted)]">
-                  {Math.round(mod.completionRatio * 100)}% complete
-                </span>
-              </div>
+              {/* Expanded assessment details */}
+              {isExpanded && (
+                <div className="border-t border-[var(--color-loop-border)] px-5 py-3 space-y-2 bg-[var(--color-loop-surface-2)]/30 expand-enter">
+                  {mod.assessments.map((a) => {
+                    const dlStatus = getDeadlineStatus(a.dueDate);
+                    return (
+                      <div
+                        key={a.id}
+                        className="flex items-center justify-between py-2 text-sm"
+                      >
+                        <div className="flex items-center gap-3 min-w-0">
+                          <span className="text-xs font-mono text-[var(--color-loop-muted)] w-10 shrink-0">
+                            {Math.round(a.weight * 100)}%
+                          </span>
+                          <span className="text-[var(--color-loop-text)] truncate">
+                            {a.name}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-3 shrink-0">
+                          {a.dueDate && (
+                            <span className={`text-xs flex items-center gap-1 ${dlStatus.color}`}>
+                              <Calendar size={10} />
+                              {formatDate(a.dueDate)}
+                            </span>
+                          )}
+                          {a.grade ? (
+                            <span
+                              className="font-mono font-bold text-sm min-w-[3rem] text-right"
+                              style={{
+                                color:
+                                  a.grade.score >= 70
+                                    ? "var(--color-loop-green)"
+                                    : a.grade.score >= 60
+                                      ? "var(--color-loop-gold)"
+                                      : a.grade.score >= 50
+                                        ? "var(--color-loop-amber)"
+                                        : "var(--color-loop-red)",
+                              }}
+                            >
+                              {a.grade.score}%
+                            </span>
+                          ) : (
+                            <span className="text-xs text-[var(--color-loop-muted)] italic">
+                              Pending
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           );
         })}
       </div>
-
     </div>
   );
 }
