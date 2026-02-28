@@ -281,6 +281,8 @@ export const STUDY_SPOTS = [
     topSkills: ["Research Methods", "Academic Writing", "Databases"],
     activeGroups: 4,
     noiseLevel: "quiet" as const,
+    lat: 57.1183,
+    lng: -2.1368,
   },
   {
     id: "lab-n",
@@ -292,6 +294,8 @@ export const STUDY_SPOTS = [
     topSkills: ["Python", "Java", "Web Development"],
     activeGroups: 2,
     noiseLevel: "moderate" as const,
+    lat: 57.1190,
+    lng: -2.1385,
   },
   {
     id: "lab-s",
@@ -303,6 +307,8 @@ export const STUDY_SPOTS = [
     topSkills: ["Network Security", "Cloud Computing", "Linux"],
     activeGroups: 1,
     noiseLevel: "moderate" as const,
+    lat: 57.1176,
+    lng: -2.1395,
   },
   {
     id: "union",
@@ -314,6 +320,8 @@ export const STUDY_SPOTS = [
     topSkills: ["Group Projects", "Interaction Design", "Presentations"],
     activeGroups: 5,
     noiseLevel: "loud" as const,
+    lat: 57.1195,
+    lng: -2.1350,
   },
   {
     id: "ishw",
@@ -325,6 +333,8 @@ export const STUDY_SPOTS = [
     topSkills: ["Software Dev", "AI", "Honours Project"],
     activeGroups: 6,
     noiseLevel: "moderate" as const,
+    lat: 57.1187,
+    lng: -2.1372,
   },
   {
     id: "riverside",
@@ -336,6 +346,8 @@ export const STUDY_SPOTS = [
     topSkills: ["UX Design", "Figma", "Prototyping"],
     activeGroups: 2,
     noiseLevel: "quiet" as const,
+    lat: 57.1172,
+    lng: -2.1355,
   },
   {
     id: "cafe",
@@ -347,6 +359,8 @@ export const STUDY_SPOTS = [
     topSkills: ["Study Groups", "Peer Review", "Exam Prep"],
     activeGroups: 3,
     noiseLevel: "loud" as const,
+    lat: 57.1180,
+    lng: -2.1340,
   },
   {
     id: "health",
@@ -358,5 +372,7 @@ export const STUDY_SPOTS = [
     topSkills: ["Quiet Study", "Dissertation Writing", "Statistics"],
     activeGroups: 0,
     noiseLevel: "quiet" as const,
+    lat: 57.1168,
+    lng: -2.1380,
   },
 ];

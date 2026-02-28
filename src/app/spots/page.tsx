@@ -1,8 +1,18 @@
 "use client";
 
 import { useState } from "react";
+import dynamic from "next/dynamic";
 import { STUDY_SPOTS } from "@/lib/mock-data";
 import { MapPin, Users, Volume2, VolumeX, Volume1, Wifi } from "lucide-react";
+
+const CampusMap = dynamic(() => import("@/components/campus-map"), {
+  ssr: false,
+  loading: () => (
+    <div className="loop-card flex items-center justify-center" style={{ height: 380 }}>
+      <div className="animate-pulse text-[var(--color-loop-muted)]">Loading map...</div>
+    </div>
+  ),
+});
 
 const typeConfig = {
   library: { label: "Library", color: "bg-blue-500", icon: "📚" },
@@ -80,6 +90,15 @@ export default function SpotsPage() {
               {type === "all" ? "All Spots" : typeConfig[type].label}
             </button>
           ))}
+        </div>
+
+        {/* Campus Map */}
+        <div className="mb-6">
+          <CampusMap
+            spots={filteredSpots}
+            checkedIn={checkedIn}
+            onCheckIn={(id) => setCheckedIn(id || null)}
+          />
         </div>
 
         {/* Campus Grid */}
