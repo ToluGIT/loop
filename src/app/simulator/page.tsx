@@ -201,19 +201,24 @@ function ModuleCard({
                   {assessment.grade!.score}
                 </span>
               ) : (
-                <div className="flex items-center gap-2 shrink-0">
-                  <input
-                    type="range"
-                    min={0}
-                    max={100}
-                    step={1}
-                    value={sliderVal ?? 50}
-                    onChange={(e) =>
-                      onSliderChange(assessment.id, Number(e.target.value))
-                    }
-                    className="w-32 sm:w-40"
-                  />
-                  <span className="text-sm font-mono font-semibold text-[var(--color-loop-primary-hover)] w-10 text-right">
+                <div className="flex items-center gap-2 shrink-0 w-44 sm:w-52">
+                  <div className="relative flex-1 h-8 flex items-center">
+                    <input
+                      type="range"
+                      min={0}
+                      max={100}
+                      step={1}
+                      value={sliderVal ?? 50}
+                      onChange={(e) =>
+                        onSliderChange(assessment.id, Number(e.target.value))
+                      }
+                      className="w-full relative z-10"
+                      style={{
+                        background: `linear-gradient(to right, var(--color-loop-primary) 0%, var(--color-loop-primary) ${sliderVal ?? 50}%, var(--color-loop-surface-2) ${sliderVal ?? 50}%, var(--color-loop-surface-2) 100%)`,
+                      }}
+                    />
+                  </div>
+                  <span className="text-sm font-mono font-bold text-[var(--color-loop-primary-hover)] w-10 text-right tabular-nums">
                     {sliderVal ?? 50}
                   </span>
                 </div>
@@ -383,31 +388,25 @@ export default function SimulatorPage() {
   const classColor = getClassificationColor(result.classification as Classification);
   const classShort = getClassificationShort(result.classification as Classification);
 
-  const level5Modules = whatIfModules.filter((m) => m.level === 5);
-  const level6Modules = whatIfModules.filter((m) => m.level === 6);
+  // Use ORIGINAL modules for rendering (so null grades show sliders)
+  // whatIfModules is only for classification calculation
+  const level5Modules = modules.filter((m) => m.level === 5);
+  const level6Modules = modules.filter((m) => m.level === 6);
 
   return (
     <div className="min-h-screen pb-20">
-      {/* Header */}
-      <header className="border-b border-[var(--color-loop-border)] bg-[var(--color-loop-surface)]/80 backdrop-blur-sm sticky top-0 z-50">
-        <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <a href="/" className="text-xl font-bold tracking-tight text-[var(--color-loop-text)]">
-              Loop
-            </a>
-            <span className="text-[var(--color-loop-muted)]">/</span>
-            <span className="text-sm text-[var(--color-loop-muted)]">
-              What-If Simulator
-            </span>
-          </div>
-          <div className="text-right">
-            <p className="text-sm font-medium text-[var(--color-loop-text)]">{user.name}</p>
-            <p className="text-xs text-[var(--color-loop-muted)]">{user.course}</p>
-          </div>
+      {/* User context bar */}
+      <div className="max-w-5xl mx-auto px-4 pt-6 pb-2 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-[var(--color-loop-muted)]">What-If Simulator</span>
         </div>
-      </header>
+        <div className="text-right">
+          <p className="text-sm font-medium text-[var(--color-loop-text)]">{user.name}</p>
+          <p className="text-xs text-[var(--color-loop-muted)]">{user.course}</p>
+        </div>
+      </div>
 
-      <main className="max-w-5xl mx-auto px-4 mt-8 space-y-8">
+      <main className="max-w-5xl mx-auto px-4 mt-4 space-y-8">
         {/* Hero Classification Section */}
         <section className="text-center space-y-6">
           {/* Animated Classification Badge */}

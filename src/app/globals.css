@@ -22,36 +22,76 @@ body {
   color: var(--color-loop-text);
 }
 
-/* Smooth slider thumb */
+/* Range slider styling */
 input[type="range"] {
   -webkit-appearance: none;
+  -moz-appearance: none;
   appearance: none;
-  height: 8px;
-  border-radius: 4px;
+  height: 6px;
+  border-radius: 3px;
   background: var(--color-loop-surface-2);
   outline: none;
+  cursor: pointer;
 }
 
+/* Webkit track - no background; filled track is set via inline style on the input */
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 3px;
+}
+
+/* Webkit thumb */
 input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
   background: var(--color-loop-primary);
   cursor: grab;
-  border: 3px solid var(--color-loop-bg);
-  box-shadow: 0 0 10px rgba(99, 102, 241, 0.4);
-  transition: transform 0.15s ease;
+  border: 2px solid var(--color-loop-bg);
+  box-shadow: 0 0 8px rgba(99, 102, 241, 0.4);
+  margin-top: -7px;
 }
 
 input[type="range"]::-webkit-slider-thumb:hover {
-  transform: scale(1.15);
+  background: var(--color-loop-primary-hover);
+  box-shadow: 0 0 14px rgba(99, 102, 241, 0.6);
 }
 
 input[type="range"]::-webkit-slider-thumb:active {
   cursor: grabbing;
-  transform: scale(1.25);
+  transform: scale(1.1);
+}
+
+/* Firefox track */
+input[type="range"]::-moz-range-track {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--color-loop-surface-2);
+  border: none;
+}
+
+/* Firefox thumb */
+input[type="range"]::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--color-loop-primary);
+  cursor: grab;
+  border: 2px solid var(--color-loop-bg);
+  box-shadow: 0 0 8px rgba(99, 102, 241, 0.4);
+}
+
+input[type="range"]::-moz-range-thumb:hover {
+  background: var(--color-loop-primary-hover);
+}
+
+/* Firefox progress fill */
+input[type="range"]::-moz-range-progress {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--color-loop-primary);
 }
 
 /* Classification badge animation */
