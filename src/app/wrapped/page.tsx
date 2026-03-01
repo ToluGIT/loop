@@ -441,8 +441,8 @@ export default function WrappedPage() {
         </section>
       </div>
 
-      {/* Hidden story card for screenshot capture */}
-      <div className="fixed -left-[9999px] top-0 pointer-events-none" aria-hidden="true">
+      {/* Hidden story card for screenshot capture — kept at 0,0 behind content so html2canvas can render it */}
+      <div className="fixed left-0 top-0 -z-50 pointer-events-none" aria-hidden="true">
         <div
           ref={storyCardRef}
           style={{

@@ -11,6 +11,8 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import Link from "next/link";
+import { Users, MapPin } from "lucide-react";
 
 interface PulseModule {
   code: string;
@@ -238,6 +240,37 @@ export default function PulsePage() {
             <p className="text-xs text-[var(--color-loop-muted)] mt-1">struggling or overwhelmed</p>
           </div>
         </div>
+
+        {stressedPct >= 30 && (
+          <div className="loop-card p-5 mb-8 border-l-4 border-[var(--color-loop-amber)]">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+              <div className="flex-1">
+                <p className="font-semibold text-[var(--color-loop-text)] mb-1">
+                  {stressedPct}% stress indicator this week
+                </p>
+                <p className="text-sm text-[var(--color-loop-muted)]">
+                  You&apos;re not alone. Connect with peers who can help or find a quiet study space.
+                </p>
+              </div>
+              <div className="flex gap-2 shrink-0">
+                <Link
+                  href="/peers"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium bg-[var(--color-loop-primary)] text-white hover:opacity-90 transition-opacity"
+                >
+                  <Users size={14} />
+                  Find Peers
+                </Link>
+                <Link
+                  href="/spots"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium bg-[var(--color-loop-surface-2)] text-[var(--color-loop-text)] hover:opacity-90 transition-opacity"
+                >
+                  <MapPin size={14} />
+                  Study Spots
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="loop-card p-6 mb-8">
           <h2 className="text-lg font-semibold mb-2">Weekly Mood Trend</h2>

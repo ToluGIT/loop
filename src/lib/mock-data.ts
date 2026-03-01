@@ -307,8 +307,8 @@ export const STUDY_SPOTS = [
     topSkills: ["Network Security", "Cloud Computing", "Linux"],
     activeGroups: 1,
     noiseLevel: "moderate" as const,
-    lat: 57.1176,
-    lng: -2.1395,
+    lat: 57.1183,
+    lng: -2.1382,
   },
   {
     id: "union",
