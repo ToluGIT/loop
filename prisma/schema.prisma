@@ -66,3 +66,46 @@ model SkillProfile {
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
+
+model StudySpot {
+  id         String   @id
+  name       String
+  type       String
+  floor      String
+  capacity   Int
+  activeGroups Int
+  topSkills  String
+  noiseLevel String
+  lat        Float
+  lng        Float
+  createdAt  DateTime @default(now())
+
+  checkIns SpotCheckIn[]
+}
+
+model SpotCheckIn {
+  id           String    @id @default(cuid())
+  spotId       String
+  clientId     String
+  createdAt    DateTime  @default(now())
+  checkedOutAt DateTime?
+
+  spot StudySpot @relation(fields: [spotId], references: [id], onDelete: Cascade)
+
+  @@index([spotId, checkedOutAt])
+  @@index([clientId, checkedOutAt])
+}
+
+model PulseCheckIn {
+  id         String    @id @default(cuid())
+  moduleCode String
+  moduleName String
+  mood       String
+  clientId   String
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@unique([moduleCode, clientId])
+  @@index([moduleCode])
+  @@index([createdAt])
+}

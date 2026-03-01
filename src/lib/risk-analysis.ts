@@ -29,13 +29,6 @@ export interface RiskAnalysisResult {
   message: string;
 }
 
-const CLASSIFICATION_BOUNDARIES: { name: string; boundary: number }[] = [
-  { name: "First", boundary: 70 },
-  { name: "2:1", boundary: 60 },
-  { name: "2:2", boundary: 50 },
-  { name: "Third", boundary: 40 },
-];
-
 const CLASSIFICATION_SHORT: Record<string, string> = {
   First: "First",
   "Upper Second (2:1)": "2:1",

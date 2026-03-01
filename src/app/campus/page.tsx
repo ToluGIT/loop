@@ -1,6 +1,6 @@
 "use client";
 
-import { CAMPUS_STATS } from "@/lib/mock-data";
+import { useEffect, useMemo, useState } from "react";
 import { Users, BookOpen, TrendingUp } from "lucide-react";
 import {
   PieChart,
@@ -15,23 +15,40 @@ import {
   ReferenceLine,
 } from "recharts";
 
-const CLASSIFICATION_DATA = [
-  { name: "First", value: CAMPUS_STATS.overallBreakdown.first, color: "#f59e0b" },
-  { name: "2:1", value: CAMPUS_STATS.overallBreakdown.upperSecond, color: "#22c55e" },
-  { name: "2:2", value: CAMPUS_STATS.overallBreakdown.lowerSecond, color: "#f97316" },
-  { name: "Third", value: CAMPUS_STATS.overallBreakdown.third, color: "#ef4444" },
-  { name: "Fail", value: CAMPUS_STATS.overallBreakdown.fail, color: "#7f1d1d" },
-];
+interface CampusStats {
+  totalStudents: number;
+  overallBreakdown: {
+    first: number;
+    upperSecond: number;
+    lowerSecond: number;
+    third: number;
+    fail: number;
+  };
+  moduleStats: Array<{
+    code: string;
+    name: string;
+    avg: number;
+    students: number;
+    firstPct: number;
+  }>;
+  weeklyTrend: Array<{ week: string; avgConfidence: number }>;
+}
 
-const dominantClass = CLASSIFICATION_DATA.reduce((max, item) =>
-  item.value > max.value ? item : max
-);
-
-const sortedModules = [...CAMPUS_STATS.moduleStats].sort((a, b) => b.avg - a.avg);
-
-const campusAvg =
-  CAMPUS_STATS.moduleStats.reduce((s, m) => s + m.avg, 0) /
-  CAMPUS_STATS.moduleStats.length;
+const EMPTY_STATS: CampusStats = {
+  totalStudents: 0,
+  overallBreakdown: { first: 0, upperSecond: 0, lowerSecond: 0, third: 0, fail: 0 },
+  moduleStats: [],
+  weeklyTrend: [
+    { week: "W1", avgConfidence: 60 },
+    { week: "W2", avgConfidence: 60 },
+    { week: "W3", avgConfidence: 60 },
+    { week: "W4", avgConfidence: 60 },
+    { week: "W5", avgConfidence: 60 },
+    { week: "W6", avgConfidence: 60 },
+    { week: "W7", avgConfidence: 60 },
+    { week: "W8", avgConfidence: 60 },
+  ],
+};
 
 function avgColor(avg: number) {
   if (avg >= 70) return "text-[var(--color-loop-green)]";
@@ -48,20 +65,60 @@ function barBg(avg: number) {
 }
 
 export default function CampusPage() {
+  const [stats, setStats] = useState<CampusStats>(EMPTY_STATS);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("/api/campus")
+      .then((response) => response.json())
+      .then((data: CampusStats) => setStats(data))
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
+
+  const classificationData = useMemo(
+    () => [
+      { name: "First", value: stats.overallBreakdown.first, color: "#f59e0b" },
+      { name: "2:1", value: stats.overallBreakdown.upperSecond, color: "#22c55e" },
+      { name: "2:2", value: stats.overallBreakdown.lowerSecond, color: "#f97316" },
+      { name: "Third", value: stats.overallBreakdown.third, color: "#ef4444" },
+      { name: "Fail", value: stats.overallBreakdown.fail, color: "#7f1d1d" },
+    ],
+    [stats]
+  );
+
+  const dominantClass = useMemo(
+    () => classificationData.reduce((max, item) => (item.value > max.value ? item : max), classificationData[0] ?? { name: "N/A", value: 0, color: "#6b7280" }),
+    [classificationData]
+  );
+
+  const sortedModules = useMemo(
+    () => [...stats.moduleStats].sort((a, b) => b.avg - a.avg),
+    [stats.moduleStats]
+  );
+
+  const campusAvg = useMemo(() => {
+    if (stats.moduleStats.length === 0) return 0;
+    return stats.moduleStats.reduce((sum, module) => sum + module.avg, 0) / stats.moduleStats.length;
+  }, [stats.moduleStats]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-pulse text-[var(--color-loop-muted)]">Loading campus stats...</div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen">
       <main className="max-w-5xl mx-auto px-4 py-8 animate-fade-in-up">
-        {/* Page header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold tracking-tight mb-1">Campus Stats</h1>
-          <p className="text-[var(--color-loop-muted)]">
-            How your cohort is doing — anonymous, aggregated data across all computing students
-          </p>
+          <p className="text-[var(--color-loop-muted)]">Live aggregated metrics built from current records.</p>
         </div>
 
-        {/* Headline stats — accent-topped cards with icons */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8 animate-stagger">
-          {/* Students */}
           <div className="loop-card p-6 relative overflow-hidden">
             <div className="absolute top-0 left-0 right-0 h-1 bg-[var(--color-loop-primary)]" />
             <div className="flex items-center gap-3 mb-3">
@@ -70,12 +127,9 @@ export default function CampusPage() {
               </div>
               <span className="text-sm font-medium text-[var(--color-loop-muted)]">Students</span>
             </div>
-            <div className="text-4xl font-bold text-[var(--color-loop-text)]">
-              {CAMPUS_STATS.totalStudents}
-            </div>
+            <div className="text-4xl font-bold text-[var(--color-loop-text)]">{stats.totalStudents}</div>
           </div>
 
-          {/* Modules */}
           <div className="loop-card p-6 relative overflow-hidden">
             <div className="absolute top-0 left-0 right-0 h-1 bg-[var(--color-loop-accent)]" />
             <div className="flex items-center gap-3 mb-3">
@@ -84,12 +138,9 @@ export default function CampusPage() {
               </div>
               <span className="text-sm font-medium text-[var(--color-loop-muted)]">Modules</span>
             </div>
-            <div className="text-4xl font-bold text-[var(--color-loop-text)]">
-              {CAMPUS_STATS.moduleStats.length}
-            </div>
+            <div className="text-4xl font-bold text-[var(--color-loop-text)]">{stats.moduleStats.length}</div>
           </div>
 
-          {/* Average Grade */}
           <div className="loop-card p-6 relative overflow-hidden">
             <div className="absolute top-0 left-0 right-0 h-1 bg-[var(--color-loop-green)]" />
             <div className="flex items-center gap-3 mb-3">
@@ -98,142 +149,66 @@ export default function CampusPage() {
               </div>
               <span className="text-sm font-medium text-[var(--color-loop-muted)]">Cohort Average</span>
             </div>
-            <div className={`text-4xl font-bold ${avgColor(campusAvg)}`}>
-              {campusAvg.toFixed(1)}%
-            </div>
+            <div className={`text-4xl font-bold ${avgColor(campusAvg)}`}>{campusAvg.toFixed(1)}%</div>
           </div>
         </div>
 
-        {/* Charts row */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          {/* Classification — Enhanced Donut with Center Label */}
           <div className="loop-card p-6">
             <h2 className="text-lg font-semibold mb-2">Classification Breakdown</h2>
             <div className="relative">
               <ResponsiveContainer width="100%" height={260}>
                 <PieChart>
-                  <Pie
-                    data={CLASSIFICATION_DATA}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={65}
-                    outerRadius={100}
-                    paddingAngle={3}
-                    dataKey="value"
-                    stroke="none"
-                  >
-                    {CLASSIFICATION_DATA.map((entry) => (
+                  <Pie data={classificationData} cx="50%" cy="50%" innerRadius={65} outerRadius={100} paddingAngle={3} dataKey="value" stroke="none">
+                    {classificationData.map((entry) => (
                       <Cell key={entry.name} fill={entry.color} />
                     ))}
                   </Pie>
-                  <Tooltip
-                    formatter={(value) => `${(Number(value) * 100).toFixed(0)}%`}
-                    contentStyle={{
-                      background: "var(--color-loop-surface-2)",
-                      border: "1px solid var(--color-loop-border)",
-                      borderRadius: "8px",
-                      color: "var(--color-loop-text)",
-                    }}
-                  />
+                  <Tooltip formatter={(value) => `${(Number(value) * 100).toFixed(0)}%`} />
                 </PieChart>
               </ResponsiveContainer>
-              {/* Center label */}
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <div className="text-center">
-                  <div className="text-3xl font-black" style={{ color: dominantClass.color }}>
-                    {dominantClass.name}
-                  </div>
-                  <div className="text-xs text-[var(--color-loop-muted)]">most common</div>
-                </div>
+              <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                <p className="text-[10px] uppercase tracking-widest text-[var(--color-loop-muted)]">Most Common</p>
+                <p className="text-lg font-bold" style={{ color: dominantClass.color }}>{dominantClass.name}</p>
+                <p className="text-xs text-[var(--color-loop-muted)]">{(dominantClass.value * 100).toFixed(0)}%</p>
               </div>
-            </div>
-            {/* Horizontal legend */}
-            <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 mt-2">
-              {CLASSIFICATION_DATA.map((entry) => (
-                <div key={entry.name} className="flex items-center gap-1.5 text-sm">
-                  <span
-                    className="w-2.5 h-2.5 rounded-full shrink-0"
-                    style={{ background: entry.color }}
-                  />
-                  <span className="text-[var(--color-loop-muted)]">{entry.name}</span>
-                  <span className="font-medium">{(entry.value * 100).toFixed(0)}%</span>
-                </div>
-              ))}
             </div>
           </div>
 
-          {/* Confidence Trend — Area Chart with Gradient Fill */}
           <div className="loop-card p-6">
             <h2 className="text-lg font-semibold mb-2">Weekly Confidence Trend</h2>
             <ResponsiveContainer width="100%" height={300}>
-              <AreaChart data={CAMPUS_STATS.weeklyTrend}>
+              <AreaChart data={stats.weeklyTrend}>
                 <defs>
                   <linearGradient id="confidenceGradient" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="0%" stopColor="var(--color-loop-primary)" stopOpacity={0.3} />
                     <stop offset="100%" stopColor="var(--color-loop-primary)" stopOpacity={0.02} />
                   </linearGradient>
                 </defs>
-                <XAxis
-                  dataKey="week"
-                  tick={{ fill: "var(--color-loop-muted)", fontSize: 12 }}
-                  axisLine={{ stroke: "var(--color-loop-border)" }}
-                  tickLine={false}
-                />
-                <YAxis
-                  domain={[40, 80]}
-                  tick={{ fill: "var(--color-loop-muted)", fontSize: 12 }}
-                  axisLine={{ stroke: "var(--color-loop-border)" }}
-                  tickLine={false}
-                  tickFormatter={(v) => `${v}%`}
-                />
-                <Tooltip
-                  formatter={(value) => [`${value}%`, "Confidence"]}
-                  contentStyle={{
-                    background: "var(--color-loop-surface-2)",
-                    border: "1px solid var(--color-loop-border)",
-                    borderRadius: "8px",
-                    color: "var(--color-loop-text)",
-                  }}
-                />
-                <ReferenceLine
-                  y={70}
-                  stroke="var(--color-loop-green)"
-                  strokeDasharray="6 4"
-                  strokeOpacity={0.4}
-                />
-                <Area
-                  type="monotone"
-                  dataKey="avgConfidence"
-                  stroke="var(--color-loop-primary)"
-                  strokeWidth={2.5}
-                  fill="url(#confidenceGradient)"
-                  dot={{ fill: "var(--color-loop-primary)", r: 4, strokeWidth: 0 }}
-                  activeDot={{ r: 6, fill: "var(--color-loop-primary-hover)" }}
-                />
+                <XAxis dataKey="week" tick={{ fill: "var(--color-loop-muted)", fontSize: 12 }} tickLine={false} />
+                <YAxis domain={[40, 80]} tickFormatter={(value) => `${value}%`} tickLine={false} />
+                <Tooltip formatter={(value) => [`${value}%`, "Confidence"]} />
+                <ReferenceLine y={70} stroke="var(--color-loop-green)" strokeDasharray="6 4" strokeOpacity={0.4} />
+                <Area type="monotone" dataKey="avgConfidence" stroke="var(--color-loop-primary)" strokeWidth={2.5} fill="url(#confidenceGradient)" />
               </AreaChart>
             </ResponsiveContainer>
           </div>
         </div>
 
-        {/* Module Performance — Card Grid */}
         <div>
           <h2 className="text-lg font-semibold mb-4">Module Performance</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {sortedModules.map((mod, i) => (
+            {sortedModules.map((mod, index) => (
               <div key={mod.code} className="loop-card p-4 flex flex-col gap-2.5">
                 <div className="flex items-center justify-between gap-2">
                   <div className="flex items-center gap-2 min-w-0">
-                    {i < 3 && (
+                    {index < 3 && (
                       <span
                         className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold text-white shrink-0 ${
-                          i === 0
-                            ? "bg-amber-500"
-                            : i === 1
-                              ? "bg-gray-400"
-                              : "bg-amber-700"
+                          index === 0 ? "bg-amber-500" : index === 1 ? "bg-gray-400" : "bg-amber-700"
                         }`}
                       >
-                        {i + 1}
+                        {index + 1}
                       </span>
                     )}
                     <span className="text-xs font-mono px-2 py-0.5 rounded-md bg-[var(--color-loop-surface-2)] text-[var(--color-loop-muted)] shrink-0">
@@ -245,14 +220,12 @@ export default function CampusPage() {
                     {mod.avg.toFixed(1)}%
                   </span>
                 </div>
-                {/* Progress bar */}
                 <div className="w-full h-1.5 rounded-full bg-[var(--color-loop-surface-2)] overflow-hidden">
                   <div
                     className={`h-full rounded-full ${barBg(mod.avg)}`}
                     style={{ width: `${mod.avg}%` }}
                   />
                 </div>
-                {/* Stats */}
                 <div className="flex gap-4 text-xs text-[var(--color-loop-muted)]">
                   <span>{mod.students} students</span>
                   <span>{(mod.firstPct * 100).toFixed(0)}% firsts</span>

@@ -142,8 +142,8 @@ export function calculateClassification(
 
   // Calculate overall weighted average
   let weightedAverage: number;
-  let totalCredits = l5.totalCredits + l6.totalCredits;
-  let completedCredits = l5.completedCredits + l6.completedCredits;
+  const totalCredits = l5.totalCredits + l6.totalCredits;
+  const completedCredits = l5.completedCredits + l6.completedCredits;
 
   if (l5.average !== null && l6.average !== null) {
     // Standard: 1/3 Level 5 + 2/3 Level 6

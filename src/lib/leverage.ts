@@ -149,8 +149,7 @@ export function calculateLeverage(
     return [];
   }
 
-  const { currentWeightedScore, completedWeight, totalWeight } =
-    getCurrentState(modules);
+  const { currentWeightedScore, totalWeight } = getCurrentState(modules);
 
   // Calculate current average for boundary detection
   // Use total weight as denominator (assumes 0 for ungraded)

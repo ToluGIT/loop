@@ -1,9 +1,24 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
-import { STUDY_SPOTS } from "@/lib/mock-data";
+import { getAnonymousClientId } from "@/lib/anonymous-client";
+import type { NoiseLevel, SpotType } from "@/lib/constants";
 import { MapPin, Users, Volume2, VolumeX, Volume1, Wifi } from "lucide-react";
+
+interface Spot {
+  id: string;
+  name: string;
+  type: SpotType;
+  floor: string;
+  peersNow: number;
+  capacity: number;
+  topSkills: string[];
+  activeGroups: number;
+  noiseLevel: NoiseLevel;
+  lat: number;
+  lng: number;
+}
 
 const CampusMap = dynamic(() => import("@/components/campus-map"), {
   ssr: false,
@@ -15,10 +30,10 @@ const CampusMap = dynamic(() => import("@/components/campus-map"), {
 });
 
 const typeConfig = {
-  library: { label: "Library", color: "bg-blue-500", icon: "📚" },
-  lab: { label: "Computer Lab", color: "bg-purple-500", icon: "💻" },
-  social: { label: "Social Space", color: "bg-green-500", icon: "☕" },
-  building: { label: "Building", color: "bg-amber-500", icon: "🏢" },
+  library: { label: "Library", icon: "📚" },
+  lab: { label: "Computer Lab", icon: "💻" },
+  social: { label: "Social Space", icon: "☕" },
+  building: { label: "Building", icon: "🏢" },
 } as const;
 
 const noiseConfig = {
@@ -27,33 +42,84 @@ const noiseConfig = {
   loud: { label: "Lively", icon: Volume2, color: "text-[var(--color-loop-primary)]" },
 } as const;
 
-type SpotType = keyof typeof typeConfig;
-type NoiseLevel = keyof typeof noiseConfig;
-
 export default function SpotsPage() {
+  const [spots, setSpots] = useState<Spot[]>([]);
   const [checkedIn, setCheckedIn] = useState<string | null>(null);
   const [filter, setFilter] = useState<SpotType | "all">("all");
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
 
-  const filteredSpots =
-    filter === "all"
-      ? STUDY_SPOTS
-      : STUDY_SPOTS.filter((s) => s.type === filter);
+  const refresh = async () => {
+    const response = await fetch("/api/spots");
+    if (!response.ok) throw new Error("Failed to fetch spots");
+    const payload: { spots: Spot[] } = await response.json();
+    setSpots(payload.spots);
+  };
 
-  const totalPeers = STUDY_SPOTS.reduce((s, spot) => s + spot.peersNow, 0);
-  const totalGroups = STUDY_SPOTS.reduce((s, spot) => s + spot.activeGroups, 0);
+  useEffect(() => {
+    refresh().finally(() => setLoading(false));
+  }, []);
+
+  const filteredSpots = useMemo(
+    () => (filter === "all" ? spots : spots.filter((spot) => spot.type === filter)),
+    [filter, spots]
+  );
+
+  const totalPeers = useMemo(() => spots.reduce((sum, spot) => sum + spot.peersNow, 0), [spots]);
+  const totalGroups = useMemo(() => spots.reduce((sum, spot) => sum + spot.activeGroups, 0), [spots]);
+
+  const syncCheckIn = async (nextSpotId: string | null) => {
+    setSaving(true);
+    const clientId = getAnonymousClientId();
+    try {
+      if (checkedIn && checkedIn !== nextSpotId) {
+        await fetch("/api/spots", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ spotId: checkedIn, clientId }),
+        });
+      }
+
+      if (nextSpotId) {
+        await fetch("/api/spots", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ spotId: nextSpotId, clientId }),
+        });
+        setCheckedIn(nextSpotId);
+      } else if (checkedIn) {
+        await fetch("/api/spots", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ spotId: checkedIn, clientId }),
+        });
+        setCheckedIn(null);
+      }
+
+      await refresh();
+    } catch {
+      // ignore in demo mode
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-pulse text-[var(--color-loop-muted)]">Loading study spots...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen">
       <main className="max-w-5xl mx-auto px-4 py-8 animate-fade-in-up">
-        {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold tracking-tight mb-1">Study Spots</h1>
-          <p className="text-[var(--color-loop-muted)]">
-            Find where your peers are studying right now across campus
-          </p>
+          <p className="text-[var(--color-loop-muted)]">Live campus activity from peer check-ins.</p>
         </div>
 
-        {/* Summary stats */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
           <div className="loop-card p-4 text-center">
             <div className="text-2xl font-bold text-[var(--color-loop-primary)]">{totalPeers}</div>
@@ -64,18 +130,15 @@ export default function SpotsPage() {
             <div className="text-xs text-[var(--color-loop-muted)]">Active study groups</div>
           </div>
           <div className="loop-card p-4 text-center">
-            <div className="text-2xl font-bold text-[var(--color-loop-accent)]">{STUDY_SPOTS.length}</div>
+            <div className="text-2xl font-bold text-[var(--color-loop-accent)]">{spots.length}</div>
             <div className="text-xs text-[var(--color-loop-muted)]">Study locations</div>
           </div>
           <div className="loop-card p-4 text-center">
-            <div className="text-2xl font-bold text-[var(--color-loop-amber)]">
-              {checkedIn ? "1" : "0"}
-            </div>
+            <div className="text-2xl font-bold text-[var(--color-loop-amber)]">{checkedIn ? "1" : "0"}</div>
             <div className="text-xs text-[var(--color-loop-muted)]">Your check-ins</div>
           </div>
         </div>
 
-        {/* Filters */}
         <div className="flex flex-wrap gap-2 mb-6">
           {(["all", "library", "lab", "social", "building"] as const).map((type) => (
             <button
@@ -92,20 +155,19 @@ export default function SpotsPage() {
           ))}
         </div>
 
-        {/* Campus Map */}
         <div className="mb-6">
           <CampusMap
             spots={filteredSpots}
             checkedIn={checkedIn}
-            onCheckIn={(id) => setCheckedIn(id || null)}
+            onCheckIn={(id) => {
+              void syncCheckIn(id || null);
+            }}
           />
         </div>
 
-        {/* Campus Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {filteredSpots.map((spot) => {
-            const config = typeConfig[spot.type as SpotType];
-            const noise = noiseConfig[spot.noiseLevel as NoiseLevel];
+            const noise = noiseConfig[spot.noiseLevel];
             const NoiseIcon = noise.icon;
             const occupancy = Math.round((spot.peersNow / spot.capacity) * 100);
             const isCheckedIn = checkedIn === spot.id;
@@ -117,14 +179,13 @@ export default function SpotsPage() {
                   isCheckedIn ? "ring-2 ring-[var(--color-loop-primary)] ring-offset-2 ring-offset-[var(--color-loop-bg)]" : ""
                 }`}
               >
-                {/* Header */}
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
-                    <span className="text-2xl">{config.icon}</span>
+                    <span className="text-2xl">{typeConfig[spot.type].icon}</span>
                     <div>
                       <h3 className="font-semibold text-[var(--color-loop-text)]">{spot.name}</h3>
                       <p className="text-xs text-[var(--color-loop-muted)]">
-                        {spot.floor} &middot; {config.label}
+                        {spot.floor} &middot; {typeConfig[spot.type].label}
                       </p>
                     </div>
                   </div>
@@ -134,30 +195,26 @@ export default function SpotsPage() {
                   </div>
                 </div>
 
-                {/* Occupancy bar */}
                 <div>
-                  <div className="flex items-center justify-between text-xs text-[var(--color-loop-muted)] mb-1">
-                    <span className="flex items-center gap-1">
-                      <Users size={12} />
-                      {spot.peersNow} peers here now
+                  <div className="flex items-center justify-between text-xs mb-1">
+                    <span className="text-[var(--color-loop-muted)]">Occupancy</span>
+                    <span className="font-semibold" style={{ color: occupancy >= 80 ? "#EF4444" : occupancy >= 50 ? "#F59E0B" : "#22C55E" }}>
+                      {spot.peersNow}/{spot.capacity} ({occupancy}%)
                     </span>
-                    <span>{occupancy}% full</span>
                   </div>
                   <div className="w-full h-2 rounded-full bg-[var(--color-loop-surface-2)] overflow-hidden">
                     <div
-                      className={`h-full rounded-full transition-all ${
-                        occupancy >= 80
-                          ? "bg-[var(--color-loop-red)]"
-                          : occupancy >= 50
-                            ? "bg-[var(--color-loop-amber)]"
-                            : "bg-[var(--color-loop-green)]"
-                      }`}
-                      style={{ width: `${occupancy}%` }}
+                      className="h-full rounded-full transition-all"
+                      style={{ width: `${Math.min(100, occupancy)}%`, background: occupancy >= 80 ? "#EF4444" : occupancy >= 50 ? "#F59E0B" : "#22C55E" }}
                     />
                   </div>
                 </div>
 
-                {/* Skills */}
+                <div className="flex items-center gap-4 text-xs text-[var(--color-loop-muted)]">
+                  <span className="flex items-center gap-1"><Users size={12} />{spot.peersNow} peers</span>
+                  <span className="flex items-center gap-1"><MapPin size={12} />{spot.floor}</span>
+                </div>
+
                 <div className="flex flex-wrap gap-1.5">
                   {spot.topSkills.map((skill) => (
                     <span
@@ -169,7 +226,6 @@ export default function SpotsPage() {
                   ))}
                 </div>
 
-                {/* Footer */}
                 <div className="flex items-center justify-between pt-2 border-t border-[var(--color-loop-border)]">
                   <div className="flex items-center gap-3 text-xs text-[var(--color-loop-muted)]">
                     {spot.activeGroups > 0 && (
@@ -178,17 +234,16 @@ export default function SpotsPage() {
                         {spot.activeGroups} active group{spot.activeGroups !== 1 ? "s" : ""}
                       </span>
                     )}
-                    <span className="flex items-center gap-1">
-                      <MapPin size={12} />
-                      Garthdee Campus
-                    </span>
                   </div>
                   <button
-                    onClick={() => setCheckedIn(isCheckedIn ? null : spot.id)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
+                    onClick={() => {
+                      void syncCheckIn(isCheckedIn ? null : spot.id);
+                    }}
+                    disabled={saving}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer disabled:opacity-60 ${
                       isCheckedIn
                         ? "bg-[var(--color-loop-green)] text-white"
-                        : "bg-[var(--color-loop-primary)]/10 text-[var(--color-loop-primary)] hover:bg-[var(--color-loop-primary)]/20"
+                        : "bg-[var(--color-loop-primary)] text-white hover:bg-[var(--color-loop-primary-hover)]"
                     }`}
                   >
                     {isCheckedIn ? "Checked In ✓" : "Check In"}

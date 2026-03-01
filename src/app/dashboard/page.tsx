@@ -76,7 +76,6 @@ export default function DashboardPage() {
   const [showAllInsights, setShowAllInsights] = useState(false);
 
   useEffect(() => {
-    setLoading(true);
     fetch(`/api/simulator/${userId}`)
       .then((r) => r.json())
       .then((data) => {
@@ -88,7 +87,10 @@ export default function DashboardPage() {
       .finally(() => setLoading(false));
   }, [userId]);
 
-  const handleUserSwitch = useCallback((id: string) => setUserId(id), []);
+  const handleUserSwitch = useCallback((id: string) => {
+    setLoading(true);
+    setUserId(id);
+  }, []);
 
   const toggleModule = useCallback((modId: string) => {
     setExpandedModules((prev) => {

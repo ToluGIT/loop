@@ -18,24 +18,21 @@ export default function ThemeProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const [theme, setTheme] = useState<Theme>("dark");
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    const stored = localStorage.getItem("loop-theme") as Theme | null;
-    if (stored === "light" || stored === "dark") {
-      setTheme(stored);
+  const [theme, setTheme] = useState<Theme>(() => {
+    if (typeof window === "undefined") {
+      return "dark";
     }
-    setMounted(true);
-  }, []);
+
+    const stored = localStorage.getItem("loop-theme");
+    return stored === "light" || stored === "dark" ? stored : "dark";
+  });
 
   useEffect(() => {
-    if (!mounted) return;
     const root = document.documentElement;
     root.classList.remove("dark", "light");
     root.classList.add(theme);
     localStorage.setItem("loop-theme", theme);
-  }, [theme, mounted]);
+  }, [theme]);
 
   const toggle = () => setTheme((t) => (t === "dark" ? "light" : "dark"));
 

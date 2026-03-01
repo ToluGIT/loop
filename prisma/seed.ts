@@ -1,9 +1,28 @@
 import { PrismaClient } from "@prisma/client";
-import { DEMO_STUDENTS, RGU_MODULES } from "../src/lib/mock-data";
+import { DEMO_STUDENTS, PULSE_DATA, RGU_MODULES, STUDY_SPOTS } from "../src/lib/mock-data";
 
 const prisma = new PrismaClient();
 
+const moodMap = {
+  confident: "confident",
+  okay: "okay",
+  struggling: "struggling",
+  overwhelmed: "overwhelmed",
+} as const;
+
+function shuffle<T>(input: T[]): T[] {
+  const items = [...input];
+  for (let index = items.length - 1; index > 0; index--) {
+    const randomIndex = Math.floor(Math.random() * (index + 1));
+    [items[index], items[randomIndex]] = [items[randomIndex], items[index]];
+  }
+  return items;
+}
+
 async function main() {
+  await prisma.spotCheckIn.deleteMany();
+  await prisma.pulseCheckIn.deleteMany();
+  await prisma.studySpot.deleteMany();
   await prisma.grade.deleteMany();
   await prisma.skillProfile.deleteMany();
   await prisma.assessment.deleteMany();
@@ -76,7 +95,62 @@ async function main() {
     console.log(`  Seeded: ${student.name}`);
   }
 
-  console.log("Done! Seeded 5 demo students.");
+  for (const spot of STUDY_SPOTS) {
+    await prisma.studySpot.create({
+      data: {
+        id: spot.id,
+        name: spot.name,
+        type: spot.type,
+        floor: spot.floor,
+        capacity: spot.capacity,
+        activeGroups: spot.activeGroups,
+        topSkills: JSON.stringify(spot.topSkills),
+        noiseLevel: spot.noiseLevel,
+        lat: spot.lat,
+        lng: spot.lng,
+      },
+    });
+
+    for (let peerIndex = 0; peerIndex < spot.peersNow; peerIndex++) {
+      await prisma.spotCheckIn.create({
+        data: {
+          spotId: spot.id,
+          clientId: `seed_spot_${spot.id}_${peerIndex}`,
+        },
+      });
+    }
+  }
+
+  const moodKeys = Object.keys(moodMap) as Array<keyof typeof moodMap>;
+  for (const modulePulse of PULSE_DATA.modules) {
+    const moodSequence: string[] = [];
+    for (const mood of moodKeys) {
+      const count = modulePulse.moods[mood];
+      for (let countIndex = 0; countIndex < count; countIndex++) {
+        moodSequence.push(moodMap[mood]);
+      }
+    }
+
+    const randomized = shuffle(moodSequence);
+    for (let responseIndex = 0; responseIndex < randomized.length; responseIndex++) {
+      const weeksAgo = Math.floor(responseIndex / Math.max(1, randomized.length / 8));
+      const createdAt = new Date();
+      createdAt.setDate(createdAt.getDate() - weeksAgo * 7);
+
+      await prisma.pulseCheckIn.create({
+        data: {
+          moduleCode: modulePulse.code,
+          moduleName: modulePulse.name,
+          mood: randomized[responseIndex],
+          clientId: `seed_pulse_${modulePulse.code}_${responseIndex}`,
+          createdAt,
+          updatedAt: createdAt,
+        },
+      });
+    }
+  }
+
+  console.log("Done! Seeded 5 demo students, pulse data, and study spots.");
 }
 
 main()
