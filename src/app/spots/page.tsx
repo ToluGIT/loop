@@ -50,7 +50,8 @@ export default function SpotsPage() {
   const [saving, setSaving] = useState(false);
 
   const refresh = async (bustCache = false) => {
-    const response = await fetch("/api/spots", bustCache ? { cache: "no-store" } : {});
+    const url = bustCache ? `/api/spots?t=${Date.now()}` : "/api/spots";
+    const response = await fetch(url);
     if (!response.ok) throw new Error("Failed to fetch spots");
     const payload: { spots: Spot[] } = await response.json();
     setSpots(payload.spots);

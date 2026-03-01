@@ -94,7 +94,8 @@ export default function PulsePage() {
   const [saving, setSaving] = useState(false);
 
   const refresh = async (bustCache = false) => {
-    const response = await fetch("/api/pulse", bustCache ? { cache: "no-store" } : {});
+    const url = bustCache ? `/api/pulse?t=${Date.now()}` : "/api/pulse";
+    const response = await fetch(url);
     if (!response.ok) throw new Error("Failed to fetch pulse data");
     const payload: PulseData = await response.json();
     setData(payload);
