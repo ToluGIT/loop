@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Menu, X, Sun, Moon } from "lucide-react";
 import { useTheme } from "@/components/theme-provider";
 
@@ -19,7 +19,10 @@ const NAV_LINKS = [
 export default function Nav() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const { theme, toggle } = useTheme();
+
+  useEffect(() => setMounted(true), []);
 
   return (
     <nav
@@ -64,14 +67,14 @@ export default function Nav() {
             );
           })}
 
-          {/* Theme Toggle */}
+          {/* Theme Toggle — only render icon after mount to avoid hydration mismatch */}
           <button
             onClick={toggle}
             className="ml-2 p-2 rounded-lg text-[var(--color-loop-muted)] hover:text-[var(--color-loop-text)] hover:bg-[var(--color-loop-surface-2)] transition-all cursor-pointer"
-            aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
-            title={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+            aria-label={mounted ? `Switch to ${theme === "dark" ? "light" : "dark"} mode` : "Toggle theme"}
+            title={mounted ? `Switch to ${theme === "dark" ? "light" : "dark"} mode` : "Toggle theme"}
           >
-            {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
+            {mounted ? (theme === "dark" ? <Sun size={18} /> : <Moon size={18} />) : <Sun size={18} />}
           </button>
         </div>
 
@@ -80,9 +83,9 @@ export default function Nav() {
           <button
             onClick={toggle}
             className="p-2 text-[var(--color-loop-muted)] hover:text-[var(--color-loop-text)] cursor-pointer"
-            aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+            aria-label={mounted ? `Switch to ${theme === "dark" ? "light" : "dark"} mode` : "Toggle theme"}
           >
-            {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
+            {mounted ? (theme === "dark" ? <Sun size={18} /> : <Moon size={18} />) : <Sun size={18} />}
           </button>
           <button
             className="p-2 text-[var(--color-loop-muted)] hover:text-[var(--color-loop-text)] cursor-pointer"
