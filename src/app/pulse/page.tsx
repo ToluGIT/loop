@@ -93,8 +93,8 @@ export default function PulsePage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
-  const refresh = async () => {
-    const response = await fetch("/api/pulse");
+  const refresh = async (bustCache = false) => {
+    const response = await fetch("/api/pulse", bustCache ? { cache: "no-store" } : {});
     if (!response.ok) throw new Error("Failed to fetch pulse data");
     const payload: PulseData = await response.json();
     setData(payload);
@@ -147,7 +147,7 @@ export default function PulsePage() {
 
       setCheckedIn((prev) => ({ ...prev, [moduleCode]: mood }));
       setSelectedModule(null);
-      await refresh();
+      await refresh(true);
     } catch {
       // ignore in demo mode
     } finally {

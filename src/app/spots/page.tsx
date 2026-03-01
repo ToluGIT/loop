@@ -49,8 +49,8 @@ export default function SpotsPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
-  const refresh = async () => {
-    const response = await fetch("/api/spots");
+  const refresh = async (bustCache = false) => {
+    const response = await fetch("/api/spots", bustCache ? { cache: "no-store" } : {});
     if (!response.ok) throw new Error("Failed to fetch spots");
     const payload: { spots: Spot[] } = await response.json();
     setSpots(payload.spots);
@@ -96,7 +96,7 @@ export default function SpotsPage() {
         setCheckedIn(null);
       }
 
-      await refresh();
+      await refresh(true);
     } catch {
       // ignore in demo mode
     } finally {
