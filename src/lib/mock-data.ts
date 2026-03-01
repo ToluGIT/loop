@@ -375,4 +375,17 @@ export const STUDY_SPOTS = [
     lat: 57.1168,
     lng: -2.1380,
   },
+  {
+    id: "digital-hub-n9",
+    name: "Digital Hub N9",
+    type: "lab" as const,
+    floor: "Floor 9, Sir Ian Wood Building",
+    peersNow: 12,
+    capacity: 35,
+    topSkills: ["Cyber Security", "Networking", "Digital Forensics"],
+    activeGroups: 2,
+    noiseLevel: "moderate" as const,
+    lat: 57.1189,
+    lng: -2.1369,
+  },
 ];

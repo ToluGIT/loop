@@ -19,18 +19,34 @@ interface Spot {
   lng: number;
 }
 
-const typeEmoji: Record<string, string> = {
-  library: "📚",
-  lab: "💻",
-  social: "☕",
-  building: "🏢",
+const typeIcon: Record<string, { svg: string; color: string }> = {
+  library: {
+    color: "#3B82F6",
+    svg: `<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>`,
+  },
+  lab: {
+    color: "#10B981",
+    svg: `<rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/>`,
+  },
+  social: {
+    color: "#F59E0B",
+    svg: `<path d="M10 2v2"/><path d="M14 2v2"/><path d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a2 2 0 1 1 0 4h-1"/><path d="M6 2v2"/>`,
+  },
+  building: {
+    color: "#8B5CF6",
+    svg: `<path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/>`,
+  },
 };
+
+function typeSvg(type: string, size = 18) {
+  const cfg = typeIcon[type] || typeIcon.building;
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="${cfg.color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${cfg.svg}</svg>`;
+}
 
 function createMarkerIcon(type: string, peersNow: number, capacity: number) {
   const occupancy = Math.round((peersNow / capacity) * 100);
-  const color =
+  const ringColor =
     occupancy >= 80 ? "#EF4444" : occupancy >= 50 ? "#F59E0B" : "#22C55E";
-  const emoji = typeEmoji[type] || "📍";
 
   return L.divIcon({
     className: "campus-marker",
@@ -43,12 +59,11 @@ function createMarkerIcon(type: string, peersNow: number, capacity: number) {
         height: 40px;
         border-radius: 50%;
         background: var(--color-loop-surface, #1A1A22);
-        border: 3px solid ${color};
+        border: 3px solid ${ringColor};
         box-shadow: 0 2px 8px rgba(0,0,0,0.3), 0 0 0 2px rgba(0,0,0,0.1);
-        font-size: 18px;
         cursor: pointer;
         transition: transform 0.2s;
-      ">${emoji}</div>
+      ">${typeSvg(type)}</div>
     `,
     iconSize: [40, 40],
     iconAnchor: [20, 20],
@@ -102,7 +117,10 @@ export default function CampusMap({ spots, checkedIn, onCheckIn }: CampusMapProp
               <Popup>
                 <div style={{ minWidth: 180, fontFamily: "var(--font-body, sans-serif)" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-                    <span style={{ fontSize: 20 }}>{typeEmoji[spot.type] || "📍"}</span>
+                    <span
+                      style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 32, height: 32, borderRadius: 8, background: `${(typeIcon[spot.type] || typeIcon.building).color}20` }}
+                      dangerouslySetInnerHTML={{ __html: typeSvg(spot.type, 16) }}
+                    />
                     <div>
                       <div style={{ fontWeight: 700, fontSize: 14 }}>{spot.name}</div>
                       <div style={{ fontSize: 11, color: "#8E90A6" }}>{spot.floor}</div>

@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import { getAnonymousClientId } from "@/lib/anonymous-client";
 import type { NoiseLevel, SpotType } from "@/lib/constants";
-import { MapPin, Users, Volume2, VolumeX, Volume1, Wifi } from "lucide-react";
+import { MapPin, Users, Volume2, VolumeX, Volume1, Wifi, BookOpen, Monitor, Coffee, Building2, type LucideIcon } from "lucide-react";
 
 interface Spot {
   id: string;
@@ -29,12 +29,12 @@ const CampusMap = dynamic(() => import("@/components/campus-map"), {
   ),
 });
 
-const typeConfig = {
-  library: { label: "Library", icon: "📚" },
-  lab: { label: "Computer Lab", icon: "💻" },
-  social: { label: "Social Space", icon: "☕" },
-  building: { label: "Building", icon: "🏢" },
-} as const;
+const typeConfig: Record<SpotType, { label: string; icon: LucideIcon; bg: string; fg: string }> = {
+  library: { label: "Library", icon: BookOpen, bg: "bg-blue-500/15", fg: "text-blue-400" },
+  lab: { label: "Computer Lab", icon: Monitor, bg: "bg-emerald-500/15", fg: "text-emerald-400" },
+  social: { label: "Social Space", icon: Coffee, bg: "bg-amber-500/15", fg: "text-amber-400" },
+  building: { label: "Building", icon: Building2, bg: "bg-violet-500/15", fg: "text-violet-400" },
+};
 
 const noiseConfig = {
   quiet: { label: "Quiet", icon: VolumeX, color: "text-[var(--color-loop-green)]" },
@@ -140,19 +140,40 @@ export default function SpotsPage() {
         </div>
 
         <div className="flex flex-wrap gap-2 mb-6">
-          {(["all", "library", "lab", "social", "building"] as const).map((type) => (
-            <button
-              key={type}
-              onClick={() => setFilter(type)}
-              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all cursor-pointer ${
-                filter === type
-                  ? "bg-[var(--color-loop-primary)] text-white"
-                  : "bg-[var(--color-loop-surface-2)] text-[var(--color-loop-muted)] hover:text-[var(--color-loop-text)]"
-              }`}
-            >
-              {type === "all" ? "All Spots" : typeConfig[type].label}
-            </button>
-          ))}
+          {(["all", "library", "lab", "social", "building"] as const).map((type) => {
+            const isActive = filter === type;
+            if (type === "all") {
+              return (
+                <button
+                  key={type}
+                  onClick={() => setFilter(type)}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all cursor-pointer ${
+                    isActive
+                      ? "bg-[var(--color-loop-primary)] text-white"
+                      : "bg-[var(--color-loop-surface-2)] text-[var(--color-loop-muted)] hover:text-[var(--color-loop-text)]"
+                  }`}
+                >
+                  All Spots
+                </button>
+              );
+            }
+            const cfg = typeConfig[type];
+            const FilterIcon = cfg.icon;
+            return (
+              <button
+                key={type}
+                onClick={() => setFilter(type)}
+                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all cursor-pointer ${
+                  isActive
+                    ? "bg-[var(--color-loop-primary)] text-white"
+                    : "bg-[var(--color-loop-surface-2)] text-[var(--color-loop-muted)] hover:text-[var(--color-loop-text)]"
+                }`}
+              >
+                <FilterIcon size={14} className={isActive ? "text-white" : cfg.fg} />
+                {cfg.label}
+              </button>
+            );
+          })}
         </div>
 
         <div className="mb-6">
@@ -181,7 +202,15 @@ export default function SpotsPage() {
               >
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
-                    <span className="text-2xl">{typeConfig[spot.type].icon}</span>
+                    {(() => {
+                      const cfg = typeConfig[spot.type];
+                      const TypeIcon = cfg.icon;
+                      return (
+                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${cfg.bg}`}>
+                          <TypeIcon size={20} className={cfg.fg} />
+                        </div>
+                      );
+                    })()}
                     <div>
                       <h3 className="font-semibold text-[var(--color-loop-text)]">{spot.name}</h3>
                       <p className="text-xs text-[var(--color-loop-muted)]">
