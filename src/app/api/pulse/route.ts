@@ -2,6 +2,8 @@ import { prisma } from "@/lib/db";
 import { ALLOWED_MOODS, MOOD_KEYS, PULSE_TREND_WEEKS, type MoodKey } from "@/lib/constants";
 import { NextRequest, NextResponse } from "next/server";
 
+export const revalidate = 60;
+
 interface ModuleMood {
   code: string;
   name: string;

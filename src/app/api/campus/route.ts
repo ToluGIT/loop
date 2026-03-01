@@ -2,6 +2,8 @@ import { buildCampusStats } from "@/lib/campus-stats";
 import { prisma } from "@/lib/db";
 import { NextResponse } from "next/server";
 
+export const revalidate = 120;
+
 export async function GET() {
   const users = await prisma.user.findMany({
     include: {

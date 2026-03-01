@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 
+export const revalidate = 30;
+
 interface SpotResponse {
   id: string;
   name: string;

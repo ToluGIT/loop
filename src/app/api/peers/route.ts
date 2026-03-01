@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 
+export const revalidate = 120;
+
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const moduleFilter = searchParams.get("module");
