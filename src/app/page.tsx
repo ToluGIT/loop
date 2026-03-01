@@ -197,7 +197,7 @@ export default function Home() {
       </section>
 
       <footer className="text-center pb-8 text-sm text-[var(--color-loop-muted)]">
-        Loop &mdash; RGU Hacks 2026 &mdash; Team Loop
+        Loop &mdash; RGU Hacks 2026
       </footer>
     </div>
   );

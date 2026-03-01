@@ -549,6 +549,7 @@ export default function SimulatorPage() {
                           avg needed
                         </span>
                       </p>
+                      <p className="text-[10px] text-[var(--color-loop-muted)] mt-0.5">on remaining assessments</p>
                     </div>
                   )
               )}

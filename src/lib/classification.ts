@@ -179,6 +179,10 @@ export function calculateClassification(
 
 /**
  * Calculate what grade is needed on remaining assessments to achieve a target classification.
+ *
+ * Uses binary search with the real classification algorithm to ensure consistency —
+ * the returned value, when applied to all ungraded assessments, actually produces the
+ * target classification through calculateClassification().
  */
 export function calculateGradeNeeded(
   modules: ModuleWithGrades[],
@@ -194,32 +198,34 @@ export function calculateGradeNeeded(
   const target = thresholds[targetClassification];
   if (target === undefined) return null;
 
-  // Get current state
-  let totalWeightedScore = 0;
-  let completedWeight = 0;
-  let remainingWeight = 0;
+  // Check if there are any ungraded assessments
+  const hasUngraded = modules.some((m) =>
+    m.assessments.some((a) => a.grade?.score == null)
+  );
+  if (!hasUngraded) return null;
 
-  for (const mod of modules) {
-    const levelMultiplier = mod.level === 6 ? 2 / 3 : 1 / 3;
-    const creditWeight = mod.credits * levelMultiplier;
-
-    for (const assessment of mod.assessments) {
-      const assessmentWeight = assessment.weight * creditWeight;
-      if (assessment.grade?.score != null) {
-        totalWeightedScore += assessment.grade.score * assessmentWeight;
-        completedWeight += assessmentWeight;
-      } else {
-        remainingWeight += assessmentWeight;
-      }
+  // Binary search: find what uniform score on remaining assessments yields overall ≥ target
+  let lo = 0;
+  let hi = 100;
+  for (let i = 0; i < 50; i++) {
+    const mid = (lo + hi) / 2;
+    const testModules = modules.map((m) => ({
+      ...m,
+      assessments: m.assessments.map((a) => ({
+        ...a,
+        grade: a.grade ?? { score: mid },
+      })),
+    }));
+    const result = calculateClassification(testModules);
+    if (result.weightedAverage >= target) {
+      hi = mid;
+    } else {
+      lo = mid;
     }
   }
 
-  if (remainingWeight === 0) return null;
-
-  const totalWeight = completedWeight + remainingWeight;
-  const neededTotal = target * totalWeight;
-  const neededFromRemaining = neededTotal - totalWeightedScore;
-  const gradeNeeded = neededFromRemaining / remainingWeight;
-
-  return Math.round(Math.max(0, Math.min(100, gradeNeeded)) * 10) / 10;
+  const needed = Math.round(Math.max(0, Math.min(100, hi)) * 10) / 10;
+  // If even 100% on remaining won't reach the target, report null
+  if (needed > 100) return null;
+  return needed;
 }
