@@ -129,6 +129,10 @@ export async function GET() {
     totalStudents: users,
     modules,
     weeklyMood,
+  }, {
+    headers: {
+      "Cache-Control": "s-maxage=60, stale-while-revalidate=300",
+    },
   });
 }
 

@@ -6,5 +6,9 @@ export async function GET() {
     orderBy: { name: "asc" },
   });
 
-  return NextResponse.json(users);
+  return NextResponse.json(users, {
+    headers: {
+      "Cache-Control": "s-maxage=120, stale-while-revalidate=300",
+    },
+  });
 }

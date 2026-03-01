@@ -21,5 +21,9 @@ export async function GET() {
   });
 
   const stats = buildCampusStats(users);
-  return NextResponse.json(stats);
+  return NextResponse.json(stats, {
+    headers: {
+      "Cache-Control": "s-maxage=120, stale-while-revalidate=300",
+    },
+  });
 }

@@ -166,9 +166,12 @@ export function calculateClassification(
 
   const confidence = totalCredits > 0 ? completedCredits / totalCredits : 0;
 
+  // Round before classifying so the displayed average and classification always agree
+  const roundedAverage = Math.round(weightedAverage * 10) / 10;
+
   return {
-    classification: getClassification(weightedAverage),
-    weightedAverage: Math.round(weightedAverage * 10) / 10,
+    classification: getClassification(roundedAverage),
+    weightedAverage: roundedAverage,
     level5Average: l5.average !== null ? Math.round(l5.average * 10) / 10 : null,
     level6Average: l6.average !== null ? Math.round(l6.average * 10) / 10 : null,
     creditsCompleted: Math.round(completedCredits),
@@ -224,7 +227,7 @@ export function calculateGradeNeeded(
     }
   }
 
-  const needed = Math.round(Math.max(0, Math.min(100, hi)) * 10) / 10;
+  const needed = Math.ceil(Math.max(0, Math.min(100, hi)) * 10) / 10;
   // If even 100% on remaining won't reach the target, report null
   if (needed > 100) return null;
   return needed;

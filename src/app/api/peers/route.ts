@@ -30,14 +30,18 @@ export async function GET(request: NextRequest) {
     };
   });
 
+  const cacheHeaders = {
+    "Cache-Control": "s-maxage=120, stale-while-revalidate=300",
+  };
+
   if (moduleFilter) {
     const filtered = parsed.filter((p) =>
       p.canTeach.some(
         (skill) => skill.toLowerCase() === moduleFilter.toLowerCase()
       )
     );
-    return NextResponse.json(filtered);
+    return NextResponse.json(filtered, { headers: cacheHeaders });
   }
 
-  return NextResponse.json(parsed);
+  return NextResponse.json(parsed, { headers: cacheHeaders });
 }

@@ -232,7 +232,7 @@ function ModuleCard({
                         }
                         className="w-full relative z-10"
                         style={{
-                          background: `linear-gradient(to right, var(--color-loop-primary) 0%, var(--color-loop-primary) ${sliderVal ?? 50}%, var(--color-loop-surface-2) ${sliderVal ?? 50}%, var(--color-loop-surface-2) 100%)`,
+                          background: `linear-gradient(to right, var(--color-loop-primary) 0%, var(--color-loop-primary) calc(${(sliderVal ?? 50) / 100} * (100% - 22px) + 11px), var(--color-loop-surface-2) calc(${(sliderVal ?? 50) / 100} * (100% - 22px) + 11px), var(--color-loop-surface-2) 100%)`,
                         }}
                       />
                     </div>

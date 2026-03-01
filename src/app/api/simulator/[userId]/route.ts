@@ -68,6 +68,10 @@ export async function GET(
         year: user.year,
       },
       modules,
+    }, {
+      headers: {
+        "Cache-Control": "s-maxage=60, stale-while-revalidate=300",
+      },
     });
   } catch (error) {
     console.error("Simulator API error:", error);
