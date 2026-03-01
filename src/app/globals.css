@@ -214,6 +214,69 @@ input[type="range"]::-moz-range-progress {
 }
 
 /* ============================================
+   WRAPPED — Spotify-style animations
+   ============================================ */
+
+@keyframes wrapped-slide-up {
+  from { opacity: 0; transform: translateY(60px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes wrapped-scale-in {
+  from { opacity: 0; transform: scale(0.6); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes wrapped-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes wrapped-float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  33% { transform: translateY(-20px) rotate(3deg); }
+  66% { transform: translateY(10px) rotate(-2deg); }
+}
+
+@keyframes wrapped-float-slow {
+  0%, 100% { transform: translateY(0) rotate(0deg) scale(1); }
+  50% { transform: translateY(-30px) rotate(5deg) scale(1.05); }
+}
+
+@keyframes wrapped-drift {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  25% { transform: translate(30px, -20px) rotate(90deg); }
+  50% { transform: translate(-10px, -40px) rotate(180deg); }
+  75% { transform: translate(-30px, -10px) rotate(270deg); }
+  100% { transform: translate(0, 0) rotate(360deg); }
+}
+
+.wrapped-visible .wrapped-anim-1 {
+  animation: wrapped-slide-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
+}
+.wrapped-visible .wrapped-anim-2 {
+  animation: wrapped-scale-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both;
+}
+.wrapped-visible .wrapped-anim-3 {
+  animation: wrapped-slide-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.5s both;
+}
+.wrapped-visible .wrapped-anim-4 {
+  animation: wrapped-fade-in 0.9s ease-out 0.7s both;
+}
+
+/* Grain overlay */
+.wrapped-grain::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 128px 128px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ============================================
    PREFERS-REDUCED-MOTION
    ============================================ */
 
@@ -229,7 +292,11 @@ input[type="range"]::-moz-range-progress {
   .animate-stagger > *,
   .expand-enter,
   .glow-urgent,
-  .classification-badge.changed {
+  .classification-badge.changed,
+  .wrapped-visible .wrapped-anim-1,
+  .wrapped-visible .wrapped-anim-2,
+  .wrapped-visible .wrapped-anim-3,
+  .wrapped-visible .wrapped-anim-4 {
     animation: none !important;
     opacity: 1 !important;
     transform: none !important;

@@ -227,7 +227,7 @@ export default function CampusPage() {
                   />
                 </div>
                 <div className="flex gap-4 text-xs text-[var(--color-loop-muted)]">
-                  <span>{mod.students} students</span>
+                  <span>{mod.students} {mod.students === 1 ? "student" : "students"}</span>
                   <span>{(mod.firstPct * 100).toFixed(0)}% firsts</span>
                 </div>
               </div>
